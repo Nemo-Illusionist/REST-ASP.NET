@@ -1,0 +1,36 @@
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using DataCore.EntityContract;
+using JetBrains.Annotations;
+
+namespace DataCore.Provider
+{
+    [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
+    public interface IWoDataProvider
+    {
+        Task<T> InsertAsync<T>(T entity) where T : class, IEntity;
+
+        /// <summary>
+        /// Пакетная вставка записей в БД.
+        /// </summary>
+        Task BatchInsertAsync<T>(IEnumerable<T> entities) where T : class, IEntity;
+
+        Task<T> UpdateAsync<T>(T entity, bool ignoreSystemProps = true) where T : class, IEntity;
+        Task BatchUpdateAsync<T>(IEnumerable<T> entities, bool ignoreSystemProps = true) where T : class, IEntity;
+
+        Task DeleteAsync<T>(T entity) where T : class, IEntity;
+        Task BatchDeleteAsync<T>(IEnumerable<T> entities) where T : class, IEntity;
+
+        Task DeleteByIdAsync<T, TKey>(TKey id) where T : class, IEntity, IEntity<TKey> where TKey : IComparable;
+
+        Task BatchDeleteByIdsAsync<T, TKey>(IEnumerable<TKey> ids)
+            where T : class, IEntity, IEntity<TKey> where TKey : IComparable;
+
+        Task SetDeleteAsync<T, TKey>(TKey id) where T : class, IEntity, IDeletable, IEntity<TKey>
+            where TKey : IComparable;
+
+        Task BatchSetDeleteAsync<T, TKey>(IEnumerable<TKey> ids) where T : class, IEntity, IDeletable, IEntity<TKey>
+            where TKey : IComparable;
+    }
+}

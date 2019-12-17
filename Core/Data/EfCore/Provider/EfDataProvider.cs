@@ -1,0 +1,225 @@
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Threading.Tasks;
+using DataCore.EntityContract;
+using EfCore.Context;
+using EfCore.Manager;
+using JetBrains.Annotations;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Storage;
+
+namespace EfCore.Provider
+{
+    [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
+    public class EfDataProvider : ITransactionDataProvider
+    {
+        private readonly ResetDbContext _dbContext;
+        private readonly INormalizeException _normalizeException;
+
+        public EfDataProvider([NotNull] ResetDbContext connection) : this(connection, new DefaultNormalizeException())
+        {
+        }
+
+        public EfDataProvider([NotNull] ResetDbContext connection, [NotNull] INormalizeException normalizeException)
+        {
+            _dbContext = connection ?? throw new ArgumentNullException(nameof(connection));
+            _normalizeException = normalizeException ?? throw new ArgumentNullException(nameof(normalizeException));
+        }
+
+        public IDbContextTransaction Transaction()
+        {
+            return _dbContext.Database.BeginTransaction();
+        }
+
+        public IDbContextTransaction Transaction(IsolationLevel isolationLevel)
+        {
+            return _dbContext.Database.BeginTransaction(isolationLevel);
+        }
+
+        public IQueryable<T> GetQueryable<T>() where T : class, IEntity
+        {
+            return _dbContext.Set<T>().AsQueryable().AsNoTracking();
+        }
+
+        #region Modify
+
+        public Task<T> InsertAsync<T>(T entity) where T : class, IEntity
+        {
+            return ExecuteCommand(async state =>
+            {
+                Add(state);
+                await _dbContext.SaveChangesAsync().ConfigureAwait(false);
+                return state;
+            }, state: entity);
+        }
+
+        public Task<T> UpdateAsync<T>(T entity, bool ignoreSystemProps = true) where T : class, IEntity
+        {
+            return ExecuteCommand(async state =>
+            {
+                UpdateEntity(state.entity, state.ignoreSystemProps);
+                await _dbContext.SaveChangesAsync().ConfigureAwait(false);
+                return state.entity;
+            }, state: (entity, ignoreSystemProps));
+        }
+
+        public Task DeleteAsync<T>(T entity) where T : class, IEntity
+        {
+            return ExecuteCommand(state =>
+            {
+                _dbContext.Set<T>().Remove(state);
+                return _dbContext.SaveChangesAsync();
+            }, state: entity);
+        }
+
+        public Task DeleteByIdAsync<T, TKey>(TKey id) where T : class, IEntity, IEntity<TKey> where TKey : IComparable
+        {
+            return ExecuteCommand(async state =>
+            {
+                var entity = await _dbContext.Set<T>().Where(t => state.Equals(t.Id)).SingleAsync()
+                    .ConfigureAwait(false);
+                _dbContext.Set<T>().Remove(entity);
+                return await _dbContext.SaveChangesAsync().ConfigureAwait(false);
+            }, state: id);
+        }
+
+        public Task SetDeleteAsync<T, TKey>(TKey id) where T : class, IEntity, IDeletable, IEntity<TKey>
+            where TKey : IComparable
+        {
+            return ExecuteCommand(async state =>
+            {
+                var entity = await _dbContext.Set<T>().Where(t => state.Equals(t.Id)).SingleAsync()
+                    .ConfigureAwait(false);
+                entity.DeletedUtc = DateTime.UtcNow;
+                UpdateEntity(entity, ignoreSystemProps: false);
+                return await _dbContext.SaveChangesAsync().ConfigureAwait(false);
+            }, state: id);
+        }
+
+        #endregion
+
+        #region BatchModify
+
+        public Task BatchInsertAsync<T>(IEnumerable<T> entities) where T : class, IEntity
+        {
+            return ExecuteCommand(state =>
+            {
+                foreach (var entity in state)
+                {
+                    Add(entity);
+                }
+
+                return _dbContext.SaveChangesAsync();
+            }, state: entities);
+        }
+
+        public Task BatchUpdateAsync<T>(IEnumerable<T> entities, bool ignoreSystemProps = true) where T : class, IEntity
+        {
+            return ExecuteCommand(state =>
+            {
+                foreach (var entity in state.entities)
+                {
+                    UpdateEntity(entity, state.ignoreSystemProps);
+                }
+
+                return _dbContext.SaveChangesAsync();
+            }, state: (entities, ignoreSystemProps));
+        }
+
+        public Task BatchDeleteAsync<T>(IEnumerable<T> entities) where T : class, IEntity
+        {
+            return ExecuteCommand(state =>
+            {
+                _dbContext.Set<T>().RemoveRange(state);
+                return _dbContext.SaveChangesAsync();
+            }, state: entities);
+        }
+
+        public Task BatchDeleteByIdsAsync<T, TKey>(IEnumerable<TKey> ids) where T : class, IEntity, IEntity<TKey>
+            where TKey : IComparable
+        {
+            return ExecuteCommand(async state =>
+            {
+                var entity = await _dbContext.Set<T>().Where(t => state.Contains(t.Id)).ToArrayAsync()
+                    .ConfigureAwait(false);
+                _dbContext.Set<T>().RemoveRange(entity);
+                return await _dbContext.SaveChangesAsync().ConfigureAwait(false);
+            }, state: ids);
+        }
+
+        public Task BatchSetDeleteAsync<T, TKey>(IEnumerable<TKey> ids)
+            where T : class, IEntity, IDeletable, IEntity<TKey>
+            where TKey : IComparable
+        {
+            return ExecuteCommand(async state =>
+            {
+                var entities = await _dbContext.Set<T>().Where(t => state.Contains(t.Id)).ToArrayAsync()
+                    .ConfigureAwait(false);
+
+                foreach (var entity in entities)
+                {
+                    entity.DeletedUtc = DateTime.UtcNow;
+                    UpdateEntity(entity, false);
+                }
+
+                return await _dbContext.SaveChangesAsync().ConfigureAwait(false);
+            }, state: ids);
+        }
+
+        #endregion
+
+        private void Add<T>(T entity) where T : class
+        {
+            if (entity is ICreatedUtc createdUtc)
+            {
+                createdUtc.CreatedUtc = DateTime.UtcNow;
+            }
+
+            if (entity is IUpdatedUtc updatedUtc)
+            {
+                updatedUtc.UpdatedUtc = DateTime.UtcNow;
+            }
+
+            _dbContext.Set<T>().Add(entity);
+        }
+
+        private void UpdateEntity<T>(T entity, bool ignoreSystemProps) where T : class
+        {
+            if (entity is IUpdatedUtc updatedUtc)
+            {
+                updatedUtc.UpdatedUtc = DateTime.UtcNow;
+            }
+
+            EntityEntry<T> entityEntry = _dbContext.Entry(entity);
+            if (ignoreSystemProps)
+            {
+                if (entity is IDeletable)
+                {
+                    entityEntry.Property(nameof(IDeletable.DeletedUtc)).IsModified = false;
+                }
+
+                if (entity is ICreatedUtc)
+                {
+                    entityEntry.Property(nameof(ICreatedUtc.CreatedUtc)).IsModified = false;
+                }
+            }
+
+            entityEntry.State = EntityState.Modified;
+        }
+
+        private async Task<T> ExecuteCommand<T, TState>(Func<TState, Task<T>> func, TState state)
+        {
+            try
+            {
+                return await func(state).ConfigureAwait(false);
+            }
+            catch (Exception exception)
+            {
+                throw _normalizeException.Normalize(exception);
+            }
+        }
+    }
+}
