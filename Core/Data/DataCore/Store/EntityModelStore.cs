@@ -8,11 +8,11 @@ using JetBrains.Annotations;
 namespace DataCore.Store
 {
     [UsedImplicitly]
-    public class EntityModelStore : IModelStore
+    public abstract class EntityModelStore : IModelStore
     {
         private readonly Type[] _modelTypes;
 
-        public EntityModelStore([NotNull] Assembly assembly)
+        protected EntityModelStore([NotNull] Assembly assembly)
         {
             if (assembly == null) throw new ArgumentNullException(nameof(assembly));
 
