@@ -4,9 +4,9 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using DataCore.EntityContract;
+using DataCore.Manager;
 using DataCore.Provider;
 using EfCore.Context;
-using EfCore.Manager;
 using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -98,6 +98,7 @@ namespace EfCore.Provider
                 UpdateEntity(entity, ignoreSystemProps: false);
                 return await _dbContext.SaveChangesAsync().ConfigureAwait(false);
             }, state: id);
+            
         }
 
         #endregion
@@ -230,6 +231,8 @@ namespace EfCore.Provider
             }
 
             EntityEntry<T> entityEntry = _dbContext.Entry(entity);
+            entityEntry.State = EntityState.Modified;
+
             if (ignoreSystemProps)
             {
                 if (entity is IDeletable)
@@ -242,8 +245,6 @@ namespace EfCore.Provider
                     entityEntry.Property(nameof(ICreatedUtc.CreatedUtc)).IsModified = false;
                 }
             }
-
-            entityEntry.State = EntityState.Modified;
         }
 
         private async Task<T> ExecuteCommand<T, TState>(Func<TState, Task<T>> func, TState state)

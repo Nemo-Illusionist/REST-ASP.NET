@@ -1,8 +1,8 @@
 using System;
 
-namespace EfCore.Manager
+namespace DataCore.Manager
 {
-    internal class DefaultDbExceptionManager : IDbExceptionManager
+    public class DefaultDbExceptionManager : IDbExceptionManager
     {
         public Exception Normalize(Exception ex)
         {

@@ -1,6 +1,6 @@
 using System;
 
-namespace EfCore.Manager
+namespace DataCore.Manager
 {
     public interface IDbExceptionManager
     {
