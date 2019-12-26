@@ -4,6 +4,7 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using DataCore.EntityContract;
+using DataCore.Provider;
 using EfCore.Context;
 using EfCore.Manager;
 using JetBrains.Annotations;
@@ -14,19 +15,19 @@ using Microsoft.EntityFrameworkCore.Storage;
 namespace EfCore.Provider
 {
     [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
-    public class EfDataProvider : ITransactionDataProvider
+    public class EfDataProvider : ITransactionDataProvider, ISafeExecuteProvider
     {
         private readonly ResetDbContext _dbContext;
-        private readonly INormalizeException _normalizeException;
+        private readonly IDbExceptionManager _dbExceptionManager;
 
-        public EfDataProvider([NotNull] ResetDbContext connection) : this(connection, new DefaultNormalizeException())
+        public EfDataProvider([NotNull] ResetDbContext connection) : this(connection, new DefaultDbExceptionManager())
         {
         }
 
-        public EfDataProvider([NotNull] ResetDbContext connection, [NotNull] INormalizeException normalizeException)
+        public EfDataProvider([NotNull] ResetDbContext connection, [NotNull] IDbExceptionManager dbExceptionManager)
         {
             _dbContext = connection ?? throw new ArgumentNullException(nameof(connection));
-            _normalizeException = normalizeException ?? throw new ArgumentNullException(nameof(normalizeException));
+            _dbExceptionManager = dbExceptionManager ?? throw new ArgumentNullException(nameof(dbExceptionManager));
         }
 
         public IDbContextTransaction Transaction()
@@ -171,6 +172,41 @@ namespace EfCore.Provider
 
         #endregion
 
+        public async Task<T> SafeExecuteAsync<T>([InstantHandle] Func<IDataProvider, Task<T>> action,
+            IsolationLevel level = IsolationLevel.RepeatableRead, int retryCount = 3)
+        {
+            var result = default(T);
+            async Task Wrapper(IDataProvider db) => result = await action(db).ConfigureAwait(false);
+
+            await SafeExecuteAsync(Wrapper, level, retryCount).ConfigureAwait(false);
+
+            return result;
+        }
+
+        public async Task SafeExecuteAsync([InstantHandle] Func<IDataProvider, Task> action,
+            IsolationLevel level = IsolationLevel.RepeatableRead, int retryCount = 3)
+        {
+            var count = 0;
+            while (true)
+            {
+                try
+                {
+                    await using var transaction = Transaction(level);
+                    await action(this).ConfigureAwait(false);
+                    transaction.Commit();
+                    break;
+                }
+                catch (Exception exception)
+                {
+                    _dbContext.Reset();
+
+                    if (!_dbExceptionManager.IsConcurrentModifyException(exception) || ++count >= retryCount) throw;
+
+                    await Task.Delay(TimeSpan.FromSeconds(1)).ConfigureAwait(false);
+                }
+            }
+        }
+
         private void Add<T>(T entity) where T : class
         {
             if (entity is ICreatedUtc createdUtc)
@@ -218,7 +254,7 @@ namespace EfCore.Provider
             }
             catch (Exception exception)
             {
-                throw _normalizeException.Normalize(exception);
+                throw _dbExceptionManager.Normalize(exception);
             }
         }
     }
