@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Core.Comparer;
-using DataCore.Annotation;
+using EfCore.Annotation;
 using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore;
 

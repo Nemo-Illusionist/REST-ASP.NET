@@ -98,7 +98,6 @@ namespace EfCore.Provider
                 UpdateEntity(entity, ignoreSystemProps: false);
                 return await _dbContext.SaveChangesAsync().ConfigureAwait(false);
             }, state: id);
-            
         }
 
         #endregion
@@ -153,8 +152,7 @@ namespace EfCore.Provider
         }
 
         public Task BatchSetDeleteAsync<T, TKey>(IEnumerable<TKey> ids)
-            where T : class, IEntity, IDeletable, IEntity<TKey>
-            where TKey : IComparable
+            where T : class, IEntity, IDeletable, IEntity<TKey> where TKey : IComparable
         {
             return ExecuteCommand(async state =>
             {

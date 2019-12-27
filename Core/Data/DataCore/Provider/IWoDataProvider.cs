@@ -19,14 +19,6 @@ namespace DataCore.Provider
         Task<T> UpdateAsync<T>(T entity, bool ignoreSystemProps = true) where T : class, IEntity;
         Task BatchUpdateAsync<T>(IEnumerable<T> entities, bool ignoreSystemProps = true) where T : class, IEntity;
 
-        Task DeleteAsync<T>(T entity) where T : class, IEntity;
-        Task BatchDeleteAsync<T>(IEnumerable<T> entities) where T : class, IEntity;
-
-        Task DeleteByIdAsync<T, TKey>(TKey id) where T : class, IEntity, IEntity<TKey> where TKey : IComparable;
-
-        Task BatchDeleteByIdsAsync<T, TKey>(IEnumerable<TKey> ids)
-            where T : class, IEntity, IEntity<TKey> where TKey : IComparable;
-
         Task SetDeleteAsync<T, TKey>(TKey id) where T : class, IEntity, IDeletable, IEntity<TKey>
             where TKey : IComparable;
 

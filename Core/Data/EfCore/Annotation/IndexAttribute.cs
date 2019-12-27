@@ -1,6 +1,6 @@
 using System;
 
-namespace DataCore.Annotation
+namespace EfCore.Annotation
 {
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = true)]
     public class IndexAttribute : Attribute
