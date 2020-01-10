@@ -101,6 +101,19 @@ namespace REST.EfCore.Provider
             }, id);
         }
 
+        public Task SetUnDeleteAsync<T, TKey>(TKey id) where T : class, IEntity, IDeletable, IEntity<TKey>
+            where TKey : IComparable
+        {
+            return ExecuteCommand(async state =>
+            {
+                var entity = await _dbContext.Set<T>().Where(t => state.Equals(t.Id)).SingleAsync()
+                    .ConfigureAwait(false);
+                entity.DeletedUtc = null;
+                UpdateEntity(entity, false);
+                return await _dbContext.SaveChangesAsync().ConfigureAwait(false);
+            }, id);
+        }
+
         #endregion
 
         #region BatchModify
@@ -163,6 +176,24 @@ namespace REST.EfCore.Provider
                 foreach (var entity in entities)
                 {
                     entity.DeletedUtc = DateTime.UtcNow;
+                    UpdateEntity(entity, false);
+                }
+
+                return await _dbContext.SaveChangesAsync().ConfigureAwait(false);
+            }, ids);
+        }
+
+        public Task BatchSetUnDeleteAsync<T, TKey>(IEnumerable<TKey> ids)
+            where T : class, IEntity, IDeletable, IEntity<TKey> where TKey : IComparable
+        {
+            return ExecuteCommand(async state =>
+            {
+                var entities = await _dbContext.Set<T>().Where(t => state.Contains(t.Id)).ToArrayAsync()
+                    .ConfigureAwait(false);
+
+                foreach (var entity in entities)
+                {
+                    entity.DeletedUtc = null;
                     UpdateEntity(entity, false);
                 }
 

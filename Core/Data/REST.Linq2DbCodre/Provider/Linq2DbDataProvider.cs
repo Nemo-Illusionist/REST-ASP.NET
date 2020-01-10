@@ -83,11 +83,22 @@ namespace REST.Linq2DbCodre.Provider
                     .Where(x => x.Id.Equals(state))
                     .Set(x => x.DeletedUtc, DateTime.UtcNow);
 
-                if (typeof(T).IsAssignableFrom(typeof(IUpdatedUtc)))
-                {
-                    // ReSharper disable once SuspiciousTypeConversion.Global
-                    queryable = queryable.Set(x => ((IUpdatedUtc) x).UpdatedUtc, DateTime.UtcNow);
-                }
+                queryable = SetUpdateUtc(queryable);
+
+                return queryable.UpdateAsync();
+            }, id);
+        }
+
+        public Task SetUnDeleteAsync<T, TKey>(TKey id) where T : class, IEntity, IDeletable, IEntity<TKey>
+            where TKey : IComparable
+        {
+            return ExecuteCommand(state =>
+            {
+                var queryable = _dataConnection.GetTable<T>()
+                    .Where(x => x.Id.Equals(state))
+                    .Set(x => x.DeletedUtc, (DateTime?) null);
+
+                queryable = SetUpdateUtc(queryable);
 
                 return queryable.UpdateAsync();
             }, id);
@@ -145,11 +156,22 @@ namespace REST.Linq2DbCodre.Provider
                     .Where(x => ids.Contains(x.Id))
                     .Set(x => x.DeletedUtc, DateTime.UtcNow);
 
-                if (typeof(T).IsAssignableFrom(typeof(IUpdatedUtc)))
-                {
-                    // ReSharper disable once SuspiciousTypeConversion.Global
-                    queryable = queryable.Set(x => ((IUpdatedUtc) x).UpdatedUtc, DateTime.UtcNow);
-                }
+                queryable = SetUpdateUtc(queryable);
+
+                return queryable.UpdateAsync();
+            }, ids);
+        }
+
+        public Task BatchSetUnDeleteAsync<T, TKey>(IEnumerable<TKey> ids)
+            where T : class, IEntity, IDeletable, IEntity<TKey> where TKey : IComparable
+        {
+            return ExecuteCommand(state =>
+            {
+                var queryable = _dataConnection.GetTable<T>()
+                    .Where(x => ids.Contains(x.Id))
+                    .Set(x => x.DeletedUtc, (DateTime?) null);
+
+                queryable = SetUpdateUtc(queryable);
 
                 return queryable.UpdateAsync();
             }, ids);
@@ -188,6 +210,19 @@ namespace REST.Linq2DbCodre.Provider
 
                     await Task.Delay(TimeSpan.FromSeconds(1)).ConfigureAwait(false);
                 }
+            }
+        }
+
+        private IUpdatable<T> SetUpdateUtc<T>(IUpdatable<T> updatable)
+        {
+            if (typeof(T).IsAssignableFrom(typeof(IUpdatedUtc)))
+            {
+                // ReSharper disable once SuspiciousTypeConversion.Global
+                return updatable.Set(x => ((IUpdatedUtc) x).UpdatedUtc, DateTime.UtcNow);
+            }
+            else
+            {
+                return updatable;
             }
         }
 

@@ -24,5 +24,11 @@ namespace REST.DataCore.Provider
 
         Task BatchSetDeleteAsync<T, TKey>(IEnumerable<TKey> ids) where T : class, IEntity, IDeletable, IEntity<TKey>
             where TKey : IComparable;
+        
+        Task SetUnDeleteAsync<T, TKey>(TKey id) where T : class, IEntity, IDeletable, IEntity<TKey>
+            where TKey : IComparable;
+
+        Task BatchSetUnDeleteAsync<T, TKey>(IEnumerable<TKey> ids) where T : class, IEntity, IDeletable, IEntity<TKey>
+            where TKey : IComparable;
     }
 }
