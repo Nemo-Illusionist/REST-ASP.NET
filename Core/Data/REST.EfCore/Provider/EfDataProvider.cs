@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
-using EfCore.Context;
 using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using REST.DataCore.EntityContract;
 using REST.DataCore.Manager;
 using REST.DataCore.Provider;
+using REST.EfCore.Context;
 
-namespace EfCore.Provider
+namespace REST.EfCore.Provider
 {
     [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
     public class EfDataProvider : IDataProvider, ISafeExecuteProvider

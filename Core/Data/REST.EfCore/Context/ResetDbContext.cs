@@ -1,7 +1,7 @@
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 
-namespace EfCore.Context
+namespace REST.EfCore.Context
 {
     public abstract class ResetDbContext : DbContext
     {

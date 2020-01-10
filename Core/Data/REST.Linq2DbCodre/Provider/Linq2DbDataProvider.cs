@@ -7,11 +7,12 @@ using System.Threading.Tasks;
 using JetBrains.Annotations;
 using LinqToDB;
 using LinqToDB.Data;
+using LinqToDB.Linq;
 using REST.DataCore.EntityContract;
 using REST.DataCore.Manager;
 using REST.DataCore.Provider;
 
-namespace Linq2DbCodre.Provider
+namespace REST.Linq2DbCodre.Provider
 {
     public class Linq2DbDataProvider : IDataProvider, ISafeExecuteProvider
     {

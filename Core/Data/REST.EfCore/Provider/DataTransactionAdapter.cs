@@ -5,7 +5,7 @@ using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore.Storage;
 using REST.DataCore.Provider;
 
-namespace EfCore.Provider
+namespace REST.EfCore.Provider
 {
     internal class DataTransactionAdapter : IDataTransaction
     {

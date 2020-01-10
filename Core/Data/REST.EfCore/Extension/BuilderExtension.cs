@@ -2,13 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using EfCore.Annotation;
 using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore;
 using REST.Core.Comparer;
 using REST.DataCore.Store;
+using REST.EfCore.Annotation;
 
-namespace EfCore.Extension
+namespace REST.EfCore.Extension
 {
     public static class BuilderExtension
     {

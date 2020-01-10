@@ -1,7 +1,7 @@
 using System;
-using EfCore.Annotation;
+using REST.EfCore.Annotation;
 
-namespace EfCore.EntityContract
+namespace REST.EfCore.EntityContract
 {
     public interface IUpdatedUtc : REST.DataCore.EntityContract.IUpdatedUtc
     {
