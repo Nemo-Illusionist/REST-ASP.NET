@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Core.Comparer;
+using DataCore.Store;
 using EfCore.Annotation;
 using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore;
@@ -11,13 +12,12 @@ namespace EfCore.Extension
 {
     public static class BuilderExtension
     {
-        public static ModelBuilder BuildEntity([NotNull] this ModelBuilder builder,
-            [NotNull] IEnumerable<Type> modelTypes)
+        public static ModelBuilder BuildEntity([NotNull] this ModelBuilder builder, [NotNull] IModelStore modelStore)
         {
             if (builder == null) throw new ArgumentNullException(nameof(builder));
-            if (modelTypes == null) throw new ArgumentNullException(nameof(modelTypes));
+            if (modelStore == null) throw new ArgumentNullException(nameof(modelStore));
 
-            foreach (var modelType in modelTypes)
+            foreach (var modelType in modelStore.GetModels())
             {
                 builder.Entity(modelType);
             }
@@ -25,13 +25,12 @@ namespace EfCore.Extension
             return builder;
         }
 
-        public static ModelBuilder BuildIndex([NotNull] this ModelBuilder builder,
-            [NotNull] IEnumerable<Type> modelTypes)
+        public static ModelBuilder BuildIndex([NotNull] this ModelBuilder builder, [NotNull] IModelStore modelStore)
         {
             if (builder == null) throw new ArgumentNullException(nameof(builder));
-            if (modelTypes == null) throw new ArgumentNullException(nameof(modelTypes));
+            if (modelStore == null) throw new ArgumentNullException(nameof(modelStore));
 
-            foreach (var type in modelTypes)
+            foreach (var type in modelStore.GetModels())
             {
                 var indices = GetPropAttribute<IndexAttribute>(type)
                     .Select(p => new
@@ -59,12 +58,12 @@ namespace EfCore.Extension
         }
 
         public static ModelBuilder BuildAutoIncrement([NotNull] this ModelBuilder builder,
-            [NotNull] IEnumerable<Type> modelTypes)
+            [NotNull] IModelStore modelStore)
         {
             if (builder == null) throw new ArgumentNullException(nameof(builder));
-            if (modelTypes == null) throw new ArgumentNullException(nameof(modelTypes));
+            if (modelStore == null) throw new ArgumentNullException(nameof(modelStore));
 
-            foreach (var type in modelTypes)
+            foreach (var type in modelStore.GetModels())
             {
                 var properties = GetPropAttribute<AutoIncrementAttribute>(type);
                 foreach (var property in properties)

@@ -10,12 +10,11 @@ using EfCore.Context;
 using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Microsoft.EntityFrameworkCore.Storage;
 
 namespace EfCore.Provider
 {
     [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
-    public class EfDataProvider : ITransactionDataProvider, ISafeExecuteProvider
+    public class EfDataProvider : IDataProvider, ISafeExecuteProvider
     {
         private readonly ResetDbContext _dbContext;
         private readonly IDbExceptionManager _dbExceptionManager;
@@ -30,14 +29,16 @@ namespace EfCore.Provider
             _dbExceptionManager = dbExceptionManager ?? throw new ArgumentNullException(nameof(dbExceptionManager));
         }
 
-        public IDbContextTransaction Transaction()
+        public IDataTransaction Transaction()
         {
-            return _dbContext.Database.BeginTransaction();
+            var transaction = _dbContext.Database.BeginTransaction();
+            return new DataTransactionAdapter(transaction);
         }
 
-        public IDbContextTransaction Transaction(IsolationLevel isolationLevel)
+        public IDataTransaction Transaction(IsolationLevel isolationLevel)
         {
-            return _dbContext.Database.BeginTransaction(isolationLevel);
+            var transaction = _dbContext.Database.BeginTransaction(isolationLevel);
+            return new DataTransactionAdapter(transaction);
         }
 
         public IQueryable<T> GetQueryable<T>() where T : class, IEntity
@@ -54,7 +55,7 @@ namespace EfCore.Provider
                 Add(state);
                 await _dbContext.SaveChangesAsync().ConfigureAwait(false);
                 return state;
-            }, state: entity);
+            }, entity);
         }
 
         public Task<T> UpdateAsync<T>(T entity, bool ignoreSystemProps = true) where T : class, IEntity
@@ -64,7 +65,7 @@ namespace EfCore.Provider
                 UpdateEntity(state.entity, state.ignoreSystemProps);
                 await _dbContext.SaveChangesAsync().ConfigureAwait(false);
                 return state.entity;
-            }, state: (entity, ignoreSystemProps));
+            }, (entity, ignoreSystemProps));
         }
 
         public Task DeleteAsync<T>(T entity) where T : class, IEntity
@@ -73,7 +74,7 @@ namespace EfCore.Provider
             {
                 _dbContext.Set<T>().Remove(state);
                 return _dbContext.SaveChangesAsync();
-            }, state: entity);
+            }, entity);
         }
 
         public Task DeleteByIdAsync<T, TKey>(TKey id) where T : class, IEntity, IEntity<TKey> where TKey : IComparable
@@ -84,7 +85,7 @@ namespace EfCore.Provider
                     .ConfigureAwait(false);
                 _dbContext.Set<T>().Remove(entity);
                 return await _dbContext.SaveChangesAsync().ConfigureAwait(false);
-            }, state: id);
+            }, id);
         }
 
         public Task SetDeleteAsync<T, TKey>(TKey id) where T : class, IEntity, IDeletable, IEntity<TKey>
@@ -95,9 +96,9 @@ namespace EfCore.Provider
                 var entity = await _dbContext.Set<T>().Where(t => state.Equals(t.Id)).SingleAsync()
                     .ConfigureAwait(false);
                 entity.DeletedUtc = DateTime.UtcNow;
-                UpdateEntity(entity, ignoreSystemProps: false);
+                UpdateEntity(entity, false);
                 return await _dbContext.SaveChangesAsync().ConfigureAwait(false);
-            }, state: id);
+            }, id);
         }
 
         #endregion
@@ -114,7 +115,7 @@ namespace EfCore.Provider
                 }
 
                 return _dbContext.SaveChangesAsync();
-            }, state: entities);
+            }, entities);
         }
 
         public Task BatchUpdateAsync<T>(IEnumerable<T> entities, bool ignoreSystemProps = true) where T : class, IEntity
@@ -127,7 +128,7 @@ namespace EfCore.Provider
                 }
 
                 return _dbContext.SaveChangesAsync();
-            }, state: (entities, ignoreSystemProps));
+            }, (entities, ignoreSystemProps));
         }
 
         public Task BatchDeleteAsync<T>(IEnumerable<T> entities) where T : class, IEntity
@@ -136,7 +137,7 @@ namespace EfCore.Provider
             {
                 _dbContext.Set<T>().RemoveRange(state);
                 return _dbContext.SaveChangesAsync();
-            }, state: entities);
+            }, entities);
         }
 
         public Task BatchDeleteByIdsAsync<T, TKey>(IEnumerable<TKey> ids) where T : class, IEntity, IEntity<TKey>
@@ -148,7 +149,7 @@ namespace EfCore.Provider
                     .ConfigureAwait(false);
                 _dbContext.Set<T>().RemoveRange(entity);
                 return await _dbContext.SaveChangesAsync().ConfigureAwait(false);
-            }, state: ids);
+            }, ids);
         }
 
         public Task BatchSetDeleteAsync<T, TKey>(IEnumerable<TKey> ids)
@@ -166,7 +167,7 @@ namespace EfCore.Provider
                 }
 
                 return await _dbContext.SaveChangesAsync().ConfigureAwait(false);
-            }, state: ids);
+            }, ids);
         }
 
         #endregion

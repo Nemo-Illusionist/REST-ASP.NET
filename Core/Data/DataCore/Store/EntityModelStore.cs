@@ -8,7 +8,7 @@ using JetBrains.Annotations;
 namespace DataCore.Store
 {
     [UsedImplicitly]
-    public abstract class EntityModelStore : IModelStore
+    public class EntityModelStore : IModelStore
     {
         private readonly Type[] _modelTypes;
 

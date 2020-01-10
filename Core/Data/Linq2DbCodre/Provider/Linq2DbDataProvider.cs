@@ -13,7 +13,7 @@ using LinqToDB.Data;
 
 namespace Linq2DbCodre.Provider
 {
-    public class Linq2DbDataProvider : ITransactionDataProvider, ISafeExecuteProvider
+    public class Linq2DbDataProvider : IDataProvider, ISafeExecuteProvider
     {
         private readonly DataConnection _dataConnection;
         private readonly IDbExceptionManager _exceptionManager;
@@ -24,14 +24,14 @@ namespace Linq2DbCodre.Provider
             _exceptionManager = exceptionManager ?? throw new ArgumentNullException(nameof(exceptionManager));
         }
 
-        public DataConnectionTransaction Transaction()
+        public IDataTransaction Transaction()
         {
-            return _dataConnection.BeginTransaction();
+            return new DataTransactionAdapter(_dataConnection.BeginTransaction());
         }
 
-        public DataConnectionTransaction Transaction(IsolationLevel isolationLevel)
+        public IDataTransaction Transaction(IsolationLevel isolationLevel)
         {
-            return _dataConnection.BeginTransaction(isolationLevel);
+            return new DataTransactionAdapter(_dataConnection.BeginTransaction(isolationLevel));
         }
 
 
