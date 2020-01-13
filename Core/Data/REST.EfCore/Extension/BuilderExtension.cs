@@ -5,9 +5,9 @@ using System.Reflection;
 using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore;
 using REST.Core.Comparer;
-using REST.DataCore.Store;
 using REST.EfCore.Annotation;
 using REST.EfCore.Provider;
+using REST.EfCore.Store;
 
 namespace REST.EfCore.Extension
 {

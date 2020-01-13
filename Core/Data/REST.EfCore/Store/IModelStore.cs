@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace REST.DataCore.Store
+namespace REST.EfCore.Store
 {
     public interface IModelStore
     {

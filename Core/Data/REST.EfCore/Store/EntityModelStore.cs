@@ -5,7 +5,7 @@ using System.Reflection;
 using JetBrains.Annotations;
 using REST.DataCore.EntityContract;
 
-namespace REST.DataCore.Store
+namespace REST.EfCore.Store
 {
     [UsedImplicitly]
     public class EntityModelStore : IModelStore

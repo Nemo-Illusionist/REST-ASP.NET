@@ -1,7 +1,9 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace REST.DataCore.EntityContract
 {
+    [SuppressMessage("ReSharper", "CA1040")]
     public interface IEntity
     {
     }
