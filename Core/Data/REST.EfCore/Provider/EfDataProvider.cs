@@ -32,13 +32,13 @@ namespace REST.EfCore.Provider
         public IDataTransaction Transaction()
         {
             var transaction = _dbContext.Database.BeginTransaction();
-            return new DataTransactionAdapter(transaction);
+            return new EfDataTransactionAdapter(transaction);
         }
 
         public IDataTransaction Transaction(IsolationLevel isolationLevel)
         {
             var transaction = _dbContext.Database.BeginTransaction(isolationLevel);
-            return new DataTransactionAdapter(transaction);
+            return new EfDataTransactionAdapter(transaction);
         }
 
         public IQueryable<T> GetQueryable<T>() where T : class, IEntity

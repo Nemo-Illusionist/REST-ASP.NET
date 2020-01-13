@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using REST.Core.Comparer;
 using REST.DataCore.Store;
 using REST.EfCore.Annotation;
+using REST.EfCore.Provider;
 
 namespace REST.EfCore.Extension
 {
@@ -25,10 +26,12 @@ namespace REST.EfCore.Extension
             return builder;
         }
 
-        public static ModelBuilder BuildIndex([NotNull] this ModelBuilder builder, [NotNull] IModelStore modelStore)
+        public static ModelBuilder BuildIndex([NotNull] this ModelBuilder builder, [NotNull] IModelStore modelStore,
+            IIndexManager indexManager = null)
         {
             if (builder == null) throw new ArgumentNullException(nameof(builder));
             if (modelStore == null) throw new ArgumentNullException(nameof(modelStore));
+            if (indexManager == null) indexManager = new DefaultIndexManager();
 
             foreach (var type in modelStore.GetModels())
             {
@@ -47,10 +50,15 @@ namespace REST.EfCore.Extension
                 {
                     var attribute = index.First().Attribute;
 
-                    builder.Entity(type)
+                    var indexBuilder = builder.Entity(type)
                         .HasIndex(index.Select(x => x.Name).ToArray())
                         .HasName(attribute.IndexName)
                         .IsUnique(attribute.IsUnique);
+                    
+                    if (!string.IsNullOrEmpty(attribute.Method))
+                    {
+                        indexBuilder = indexManager.HasMethod(indexBuilder, attribute.Method);
+                    }
                 }
             }
 

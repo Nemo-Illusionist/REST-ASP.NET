@@ -12,7 +12,7 @@ using REST.DataCore.EntityContract;
 using REST.DataCore.Manager;
 using REST.DataCore.Provider;
 
-namespace REST.Linq2DbCodre.Provider
+namespace REST.Linq2DbCore.Provider
 {
     public class Linq2DbDataProvider : IDataProvider, ISafeExecuteProvider
     {
@@ -27,12 +27,12 @@ namespace REST.Linq2DbCodre.Provider
 
         public IDataTransaction Transaction()
         {
-            return new DataTransactionAdapter(_dataConnection.BeginTransaction());
+            return new Linq2DbDataTransactionAdapter(_dataConnection.BeginTransaction());
         }
 
         public IDataTransaction Transaction(IsolationLevel isolationLevel)
         {
-            return new DataTransactionAdapter(_dataConnection.BeginTransaction(isolationLevel));
+            return new Linq2DbDataTransactionAdapter(_dataConnection.BeginTransaction(isolationLevel));
         }
 
 

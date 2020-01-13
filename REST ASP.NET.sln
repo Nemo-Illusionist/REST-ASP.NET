@@ -12,7 +12,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "REST.DataCore", "Core\Data\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "REST.Core", "Core\REST.Core\REST.Core.csproj", "{E583D206-C2FB-4266-89AC-C7F8E2B8DAEA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "REST.Linq2DbCodre", "Core\Data\REST.Linq2DbCodre\REST.Linq2DbCodre.csproj", "{3671A140-B86F-48B4-A8C8-AEFEA6541F35}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "REST.Linq2DbCore", "Core\Data\REST.Linq2DbCore\REST.Linq2DbCore.csproj", "{3671A140-B86F-48B4-A8C8-AEFEA6541F35}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "REST.Infrastructure", "Core\REST.Infrastructure\REST.Infrastructure.csproj", "{5764077E-A7E1-4270-A678-E112E5DF7044}"
 EndProject

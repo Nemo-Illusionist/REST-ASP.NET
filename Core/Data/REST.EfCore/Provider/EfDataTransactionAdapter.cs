@@ -7,11 +7,11 @@ using REST.DataCore.Provider;
 
 namespace REST.EfCore.Provider
 {
-    internal class DataTransactionAdapter : IDataTransaction
+    internal class EfDataTransactionAdapter : IDataTransaction
     {
         private readonly IDbContextTransaction _transaction;
 
-        public DataTransactionAdapter([NotNull] IDbContextTransaction transaction)
+        public EfDataTransactionAdapter([NotNull] IDbContextTransaction transaction)
         {
             _transaction = transaction ?? throw new ArgumentNullException(nameof(transaction));
         }

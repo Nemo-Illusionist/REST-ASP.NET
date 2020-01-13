@@ -5,13 +5,13 @@ using JetBrains.Annotations;
 using LinqToDB.Data;
 using REST.DataCore.Provider;
 
-namespace REST.Linq2DbCodre.Provider
+namespace REST.Linq2DbCore.Provider
 {
-    internal class DataTransactionAdapter : IDataTransaction
+    internal class Linq2DbDataTransactionAdapter : IDataTransaction
     {
         private readonly DataConnectionTransaction _transaction;
 
-        public DataTransactionAdapter([NotNull] DataConnectionTransaction transaction)
+        public Linq2DbDataTransactionAdapter([NotNull] DataConnectionTransaction transaction)
         {
             _transaction = transaction ?? throw new ArgumentNullException(nameof(transaction));
         }
