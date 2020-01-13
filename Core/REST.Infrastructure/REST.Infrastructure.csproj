@@ -4,4 +4,14 @@
         <TargetFramework>netcoreapp3.1</TargetFramework>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Data\REST.DataCore\REST.DataCore.csproj" />
+      <ProjectReference Include="..\REST.Core\REST.Core.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="AutoMapper" Version="9.0.0" />
+      <PackageReference Include="Morcatko.AspNetCore.JsonMergePatch" Version="2.0.2" />
+    </ItemGroup>
+
 </Project>
