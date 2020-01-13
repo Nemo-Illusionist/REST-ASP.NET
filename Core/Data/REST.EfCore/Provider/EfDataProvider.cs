@@ -231,7 +231,7 @@ namespace REST.EfCore.Provider
                 {
                     _dbContext.Reset();
 
-                    if (!_dbExceptionManager.IsConcurrentModifyException(exception) || ++count >= retryCount) throw;
+                    if (_dbExceptionManager.IsConcurrentModifyException(exception) && ++count >= retryCount) throw;
 
                     await Task.Delay(TimeSpan.FromSeconds(1)).ConfigureAwait(false);
                 }

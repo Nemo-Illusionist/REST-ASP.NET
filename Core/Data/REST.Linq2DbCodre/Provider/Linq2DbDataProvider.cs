@@ -179,7 +179,6 @@ namespace REST.Linq2DbCodre.Provider
 
         #endregion
 
-
         public async Task<T> SafeExecuteAsync<T>(Func<IDataProvider, Task<T>> action,
             IsolationLevel level = IsolationLevel.RepeatableRead, int retryCount = 3)
         {
@@ -199,14 +198,14 @@ namespace REST.Linq2DbCodre.Provider
             {
                 try
                 {
-                    using var transaction = Transaction(level);
+                    await using var transaction = Transaction(level);
                     await action(this).ConfigureAwait(false);
                     transaction.Commit();
                     break;
                 }
                 catch (Exception exception)
                 {
-                    if (!_exceptionManager.IsConcurrentModifyException(exception) || ++count >= retryCount) throw;
+                    if (_exceptionManager.IsConcurrentModifyException(exception) && ++count >= retryCount) throw;
 
                     await Task.Delay(TimeSpan.FromSeconds(1)).ConfigureAwait(false);
                 }
