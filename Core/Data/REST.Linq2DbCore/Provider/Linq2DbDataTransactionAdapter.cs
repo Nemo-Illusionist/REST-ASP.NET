@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using LinqToDB.Data;
-using REST.DataCore.Provider;
+using REST.DataCore.Contract.Provider;
 
 namespace REST.Linq2DbCore.Provider
 {

@@ -2,18 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
-using REST.DataCore.EntityContract;
+using REST.DataCore.Contract.Entity;
 
-namespace REST.DataCore.Provider
+namespace REST.DataCore.Contract.Provider
 {
     [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
     public interface IRwDataProvider : IRoDataProvider
     {
         Task<T> InsertAsync<T>(T entity) where T : class, IEntity;
 
-        /// <summary>
-        /// Пакетная вставка записей в БД.
-        /// </summary>
         Task BatchInsertAsync<T>(IEnumerable<T> entities) where T : class, IEntity;
 
         Task<T> UpdateAsync<T>(T entity, bool ignoreSystemProps = true) where T : class, IEntity;

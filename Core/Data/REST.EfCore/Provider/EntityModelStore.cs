@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using JetBrains.Annotations;
-using REST.DataCore.EntityContract;
+using REST.DataCore.Contract.Entity;
+using REST.EfCore.Contract;
 
-namespace REST.EfCore.Store
+namespace REST.EfCore.Provider
 {
     [UsedImplicitly]
     public class EntityModelStore : IModelStore

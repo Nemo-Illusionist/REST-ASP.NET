@@ -1,7 +1,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using REST.DataCore.Manager;
+using REST.DataCore.Contract;
 
 namespace REST.EfCore.Provider
 {

@@ -1,8 +1,9 @@
 using System;
+using REST.DataCore.Contract;
 
 namespace REST.DataCore.Manager
 {
-    public class DefaultDbExceptionManager : IDbExceptionManager
+    public class DefaultDataExceptionManager : IDataExceptionManager
     {
         public Exception Normalize(Exception ex)
         {

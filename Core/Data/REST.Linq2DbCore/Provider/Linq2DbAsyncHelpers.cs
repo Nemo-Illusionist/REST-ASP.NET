@@ -1,7 +1,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using LinqToDB;
-using REST.DataCore.Manager;
+using REST.DataCore.Contract;
 
 namespace REST.Linq2DbCore.Provider
 {

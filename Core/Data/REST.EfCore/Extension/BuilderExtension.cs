@@ -6,8 +6,8 @@ using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore;
 using REST.Core.Comparer;
 using REST.EfCore.Annotation;
+using REST.EfCore.Contract;
 using REST.EfCore.Provider;
-using REST.EfCore.Store;
 
 namespace REST.EfCore.Extension
 {

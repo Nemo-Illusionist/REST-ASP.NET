@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
-using REST.DataCore.EntityContract;
+using REST.DataCore.Contract;
+using REST.DataCore.Contract.Entity;
+using REST.DataCore.Contract.Provider;
 using REST.DataCore.Manager;
-using REST.DataCore.Provider;
 using REST.EfCore.Context;
 
 namespace REST.EfCore.Provider
@@ -17,16 +18,16 @@ namespace REST.EfCore.Provider
     public class EfDataProvider : IDataProvider, ISafeExecuteProvider
     {
         private readonly ResetDbContext _dbContext;
-        private readonly IDbExceptionManager _dbExceptionManager;
+        private readonly IDataExceptionManager _dataExceptionManager;
 
-        public EfDataProvider([NotNull] ResetDbContext connection) : this(connection, new DefaultDbExceptionManager())
+        public EfDataProvider([NotNull] ResetDbContext connection) : this(connection, new DefaultDataExceptionManager())
         {
         }
 
-        public EfDataProvider([NotNull] ResetDbContext connection, [NotNull] IDbExceptionManager dbExceptionManager)
+        public EfDataProvider([NotNull] ResetDbContext connection, [NotNull] IDataExceptionManager dataExceptionManager)
         {
             _dbContext = connection ?? throw new ArgumentNullException(nameof(connection));
-            _dbExceptionManager = dbExceptionManager ?? throw new ArgumentNullException(nameof(dbExceptionManager));
+            _dataExceptionManager = dataExceptionManager ?? throw new ArgumentNullException(nameof(dataExceptionManager));
         }
 
         public IDataTransaction Transaction()
@@ -231,7 +232,7 @@ namespace REST.EfCore.Provider
                 {
                     _dbContext.Reset();
 
-                    if (_dbExceptionManager.IsConcurrentModifyException(exception) && ++count >= retryCount) throw;
+                    if (_dataExceptionManager.IsConcurrentModifyException(exception) && ++count >= retryCount) throw;
 
                     await Task.Delay(TimeSpan.FromSeconds(1)).ConfigureAwait(false);
                 }
@@ -285,7 +286,7 @@ namespace REST.EfCore.Provider
             }
             catch (Exception exception)
             {
-                throw _dbExceptionManager.Normalize(exception);
+                throw _dataExceptionManager.Normalize(exception);
             }
         }
     }

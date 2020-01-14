@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore.Storage;
-using REST.DataCore.Provider;
+using REST.DataCore.Contract.Provider;
 
 namespace REST.EfCore.Provider
 {

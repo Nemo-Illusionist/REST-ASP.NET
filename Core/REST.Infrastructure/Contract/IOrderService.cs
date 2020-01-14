@@ -1,7 +1,7 @@
 using System.Linq;
 using REST.Infrastructure.Dto;
 
-namespace REST.Infrastructure.Service
+namespace REST.Infrastructure.Contract
 {
     public interface IOrderService
     {

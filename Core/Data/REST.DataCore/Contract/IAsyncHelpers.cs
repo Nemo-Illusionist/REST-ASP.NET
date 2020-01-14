@@ -1,7 +1,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace REST.DataCore.Manager
+namespace REST.DataCore.Contract
 {
     public interface IAsyncHelpers
     {

@@ -8,18 +8,18 @@ using JetBrains.Annotations;
 using LinqToDB;
 using LinqToDB.Data;
 using LinqToDB.Linq;
-using REST.DataCore.EntityContract;
-using REST.DataCore.Manager;
-using REST.DataCore.Provider;
+using REST.DataCore.Contract;
+using REST.DataCore.Contract.Entity;
+using REST.DataCore.Contract.Provider;
 
 namespace REST.Linq2DbCore.Provider
 {
     public class Linq2DbDataProvider : IDataProvider, ISafeExecuteProvider
     {
         private readonly DataConnection _dataConnection;
-        private readonly IDbExceptionManager _exceptionManager;
+        private readonly IDataExceptionManager _exceptionManager;
 
-        public Linq2DbDataProvider(DataConnection dataConnection, [NotNull] IDbExceptionManager exceptionManager)
+        public Linq2DbDataProvider(DataConnection dataConnection, [NotNull] IDataExceptionManager exceptionManager)
         {
             _dataConnection = dataConnection ?? throw new ArgumentNullException(nameof(dataConnection));
             _exceptionManager = exceptionManager ?? throw new ArgumentNullException(nameof(exceptionManager));

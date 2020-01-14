@@ -1,6 +1,6 @@
 using System;
 
-namespace REST.DataCore.EntityContract
+namespace REST.DataCore.Contract.Entity
 {
     public interface ICreatedUtc : IEntity
     {

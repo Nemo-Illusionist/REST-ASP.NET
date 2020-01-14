@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace REST.EfCore.Provider
+namespace REST.EfCore.Contract
 {
     public interface IIndexManager
     {

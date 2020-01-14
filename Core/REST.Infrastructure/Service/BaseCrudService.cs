@@ -5,9 +5,10 @@ using System.Threading.Tasks;
 using AutoMapper;
 using JetBrains.Annotations;
 using Morcatko.AspNetCore.JsonMergePatch;
-using REST.DataCore.EntityContract;
-using REST.DataCore.Manager;
-using REST.DataCore.Provider;
+using REST.DataCore.Contract;
+using REST.DataCore.Contract.Entity;
+using REST.DataCore.Contract.Provider;
+using REST.Infrastructure.Contract;
 using REST.Infrastructure.Dto;
 using REST.Infrastructure.Extension;
 

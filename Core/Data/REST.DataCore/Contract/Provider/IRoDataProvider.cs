@@ -1,9 +1,9 @@
 using System.Data;
 using System.Linq;
 using JetBrains.Annotations;
-using REST.DataCore.EntityContract;
+using REST.DataCore.Contract.Entity;
 
-namespace REST.DataCore.Provider
+namespace REST.DataCore.Contract.Provider
 {
     [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
     public interface IRoDataProvider

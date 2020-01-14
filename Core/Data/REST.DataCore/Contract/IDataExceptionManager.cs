@@ -1,8 +1,8 @@
 using System;
 
-namespace REST.DataCore.Manager
+namespace REST.DataCore.Contract
 {
-    public interface IDbExceptionManager
+    public interface IDataExceptionManager
     {
         Exception Normalize(Exception ex);
         bool IsConcurrentModifyException(Exception ex);

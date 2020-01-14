@@ -1,9 +1,9 @@
 using System;
 using REST.EfCore.Annotation;
 
-namespace REST.EfCore.EntityContract
+namespace REST.EfCore.Contract.Entity
 {
-    public interface IUpdatedUtc : REST.DataCore.EntityContract.IUpdatedUtc
+    public interface IUpdatedUtc : DataCore.Contract.Entity.IUpdatedUtc
     {
         [Index]
         new DateTime UpdatedUtc { get; set; }

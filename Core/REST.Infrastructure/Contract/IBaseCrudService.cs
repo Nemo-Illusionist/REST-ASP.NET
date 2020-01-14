@@ -3,10 +3,10 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Morcatko.AspNetCore.JsonMergePatch;
-using REST.DataCore.EntityContract;
+using REST.DataCore.Contract.Entity;
 using REST.Infrastructure.Dto;
 
-namespace REST.Infrastructure.Service
+namespace REST.Infrastructure.Contract
 {
     public interface IBaseCrudService<TDb, TKey, TDto, TRequest> : IBaseCrudService<TDb, TKey, TDto, TDto, TRequest>
         where TDb : class, IEntity<TKey>

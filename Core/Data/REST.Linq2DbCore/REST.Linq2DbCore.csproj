@@ -13,4 +13,8 @@
         <ProjectReference Include="..\REST.DataCore\REST.DataCore.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Contract" />
+    </ItemGroup>
+
 </Project>
