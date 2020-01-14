@@ -9,7 +9,7 @@ using REST.Infrastructure.Extension;
 
 namespace REST.Infrastructure.Service
 {
-    public class OrderService : IOrderService
+    public class OrderHelper : IOrderHelper
     {
         private static readonly IReadOnlyDictionary<string, MethodInfo> Methods = GetMethods();
 

@@ -24,17 +24,17 @@ namespace REST.Infrastructure.Service
     {
         private readonly IDataProvider _dataProvider;
         private readonly IAsyncHelpers _asyncHelpers;
-        private readonly IOrderService _orderService;
+        private readonly IOrderHelper _orderHelper;
         private readonly IMapper _mapper;
 
         public BaseCrudService([NotNull] IDataProvider dataProvider,
             [NotNull] IAsyncHelpers asyncHelpers,
-            [NotNull] IOrderService orderService,
+            [NotNull] IOrderHelper orderHelper,
             [NotNull] IMapper mapper)
         {
             _dataProvider = dataProvider ?? throw new ArgumentNullException(nameof(dataProvider));
             _asyncHelpers = asyncHelpers ?? throw new ArgumentNullException(nameof(asyncHelpers));
-            _orderService = orderService ?? throw new ArgumentNullException(nameof(orderService));
+            _orderHelper = orderHelper ?? throw new ArgumentNullException(nameof(orderHelper));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
@@ -132,7 +132,7 @@ namespace REST.Infrastructure.Service
             {
                 if (orders != null && orders.Any())
                 {
-                    queryable = _orderService.ApplyOrderBy(queryable, orders);
+                    queryable = _orderHelper.ApplyOrderBy(queryable, orders);
                 }
 
                 if (pageFilter != null)

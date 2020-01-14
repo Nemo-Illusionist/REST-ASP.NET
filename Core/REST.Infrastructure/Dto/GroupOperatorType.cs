@@ -3,9 +3,9 @@ using JetBrains.Annotations;
 namespace REST.Infrastructure.Dto
 {
     [PublicAPI]
-    public enum SortDirection
+    public enum GroupOperatorType
     {
-        Asc,
-        Desc
+        And,
+        Or
     }
 }
