@@ -2,13 +2,13 @@ using System;
 using System.Linq;
 using AutoMapper;
 using JetBrains.Annotations;
-using REST.Infrastructure.Dto;
+using REST.Infrastructure.Contract.Dto;
 
 namespace REST.Infrastructure.Extension
 {
     public static class QueryableExtension
     {
-        public static IQueryable<T> FilterPage<T>(this IQueryable<T> source, PageFilter pageFilter)
+        public static IQueryable<T> FilterPage<T>(this IQueryable<T> source, IPageFilter pageFilter)
         {
             if (source == null) throw new ArgumentNullException(nameof(source));
             if (pageFilter == null) throw new ArgumentNullException(nameof(pageFilter));

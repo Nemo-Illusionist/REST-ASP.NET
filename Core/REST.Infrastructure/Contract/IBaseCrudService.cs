@@ -4,6 +4,7 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Morcatko.AspNetCore.JsonMergePatch;
 using REST.DataCore.Contract.Entity;
+using REST.Infrastructure.Contract.Dto;
 using REST.Infrastructure.Dto;
 
 namespace REST.Infrastructure.Contract
@@ -26,8 +27,8 @@ namespace REST.Infrastructure.Contract
     {
         Task<TFullDto> GetById(TKey id);
 
-        Task<PagedResult<TDto>> GetByFilter(PageFilter pageFilter, Expression<Func<TDto, bool>> filter = null,
-            Order[] orders = null);
+        Task<PagedResult<TDto>> GetByFilter(IPageFilter pageFilter, Expression<Func<TDto, bool>> filter = null,
+            IOrder[] orders = null);
 
         Task<TKey> Post(TRequest request);
         Task<TKey> Put(TKey id, TRequest request);

@@ -9,6 +9,7 @@ using REST.DataCore.Contract;
 using REST.DataCore.Contract.Entity;
 using REST.DataCore.Contract.Provider;
 using REST.Infrastructure.Contract;
+using REST.Infrastructure.Contract.Dto;
 using REST.Infrastructure.Dto;
 using REST.Infrastructure.Extension;
 
@@ -45,9 +46,9 @@ namespace REST.Infrastructure.Service
             return _asyncHelpers.SingleOrDefaultAsync(queryable);
         }
 
-        public async Task<PagedResult<TDto>> GetByFilter([NotNull] PageFilter pageFilter,
+        public async Task<PagedResult<TDto>> GetByFilter([NotNull] IPageFilter pageFilter,
             Expression<Func<TDto, bool>> filter = null,
-            Order[] orders = null)
+            IOrder[] orders = null)
         {
             if (pageFilter == null) throw new ArgumentNullException(nameof(pageFilter));
 
@@ -118,8 +119,8 @@ namespace REST.Infrastructure.Service
         }
 
 
-        private IQueryable<T> GetQueryable<T>(PageFilter pageFilter, Expression<Func<T, bool>> filter,
-            Order[] orders, bool isCount)
+        private IQueryable<T> GetQueryable<T>(IPageFilter pageFilter, Expression<Func<T, bool>> filter,
+            IOrder[] orders, bool isCount)
         {
             var queryable = _dataProvider.GetQueryable<TDb>().ProjectTo<T>(_mapper);
 

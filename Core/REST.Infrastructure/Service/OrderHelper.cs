@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using JetBrains.Annotations;
 using REST.Infrastructure.Contract;
+using REST.Infrastructure.Contract.Dto;
 using REST.Infrastructure.Dto;
-using REST.Infrastructure.Extension;
 
 namespace REST.Infrastructure.Service
 {
@@ -34,47 +35,63 @@ namespace REST.Infrastructure.Service
         }
 
 
-        public IQueryable<T> ApplyOrderBy<T>(IQueryable<T> queryable, Order[] orders)
+        public IQueryable<T> ApplyOrderBy<T>([NotNull] IQueryable<T> queryable, IOrder order)
         {
-            if (orders == null || !orders.Any()) return queryable;
+            if (queryable == null) throw new ArgumentNullException(nameof(queryable));
+            if (order == null) return queryable;
 
             var type = typeof(T);
-            var orderFirst = orders.First();
-            var sortDirections = orderFirst.Direction.GetOrDefault();
-            var methodName = sortDirections == SortDirection.Asc
-                ? nameof(Queryable.OrderBy)
-                : nameof(Queryable.OrderByDescending);
+            return ApplyOrder(queryable, type, order);
+        }
 
-            var orderedQueryable = ApplyOrder(queryable, type, methodName, orderFirst.Fields);
+        public IQueryable<T> ApplyOrderBy<T>([NotNull] IQueryable<T> queryable, IOrder[] orders)
+        {
+            if (queryable == null) throw new ArgumentNullException(nameof(queryable));
+
+            if (orders == null || !orders.Any()) return queryable;
+
+            var orderFirst = orders.First();
+            var type = typeof(T);
+            var orderedQueryable = ApplyOrder(queryable, type, orderFirst);
 
             foreach (var order in orders.Skip(1))
             {
-                methodName = sortDirections == SortDirection.Asc
+                var methodName = order.DirectionValue == SortDirection.Asc
                     ? nameof(Queryable.ThenBy)
                     : nameof(Queryable.ThenByDescending);
-                orderedQueryable = ApplyOrder(orderedQueryable, type, methodName, order.Fields);
+                orderedQueryable = ApplyOrder(orderedQueryable, type, methodName, order.SplitField());
             }
 
             return orderedQueryable;
         }
 
+        private static IOrderedQueryable<T> ApplyOrder<T>(IQueryable<T> queryable, Type typeOut, IOrder order)
+        {
+            var methodName = order.DirectionValue == SortDirection.Asc
+                ? nameof(Queryable.OrderBy)
+                : nameof(Queryable.OrderByDescending);
+
+            return ApplyOrder(queryable, typeOut, methodName, order.SplitField());
+        }
+
         private static IOrderedQueryable<T> ApplyOrder<T>(IQueryable<T> source, Type type, string methodName,
             IEnumerable<string> props)
         {
-            var arg = Expression.Parameter(type, "x");
+            var typeIn = type;
+            var arg = Expression.Parameter(typeIn, "x");
             Expression expr = arg;
             foreach (var prop in props)
             {
-                var pi = type.GetProperty(prop.ToUpperCaseFirstChar());
+                var pi = typeIn.GetProperty(prop);
                 if (pi == null) continue;
 
                 expr = Expression.Property(expr, pi);
-                type = pi.PropertyType;
+                typeIn = pi.PropertyType;
             }
 
-            var lambda = Expression.Lambda(typeof(Func<,>).MakeGenericType(typeof(T), type), expr, arg);
+            var lambda = Expression.Lambda(typeof(Func<,>).MakeGenericType(typeof(T), typeIn), expr, arg);
 
-            var result = Methods[methodName].MakeGenericMethod(typeof(T), type)
+            var result = Methods[methodName].MakeGenericMethod(typeof(T), typeIn)
                 .Invoke(null, new object[] {source, lambda});
             return (IOrderedQueryable<T>) result;
         }

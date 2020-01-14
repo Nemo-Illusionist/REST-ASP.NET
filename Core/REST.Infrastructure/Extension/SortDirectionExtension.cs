@@ -4,7 +4,7 @@ namespace REST.Infrastructure.Extension
 {
     public static class SortDirectionExtension
     {
-        public static SortDirection GetOrDefault(this SortDirection? sortDirection)
+        public static SortDirection GetOrAsc(this SortDirection? sortDirection)
         {
             return sortDirection ?? SortDirection.Asc;
         }
