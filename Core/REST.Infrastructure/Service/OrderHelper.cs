@@ -41,7 +41,7 @@ namespace REST.Infrastructure.Service
             if (order == null) return queryable;
 
             var type = typeof(T);
-            return ApplyOrder(queryable, type, order);
+            return ApplyFirstOrder(queryable, type, order);
         }
 
         public IQueryable<T> ApplyOrderBy<T>([NotNull] IQueryable<T> queryable, IOrder[] orders)
@@ -52,7 +52,7 @@ namespace REST.Infrastructure.Service
 
             var orderFirst = orders.First();
             var type = typeof(T);
-            var orderedQueryable = ApplyOrder(queryable, type, orderFirst);
+            var orderedQueryable = ApplyFirstOrder(queryable, type, orderFirst);
 
             foreach (var order in orders.Skip(1))
             {
@@ -65,7 +65,7 @@ namespace REST.Infrastructure.Service
             return orderedQueryable;
         }
 
-        private static IOrderedQueryable<T> ApplyOrder<T>(IQueryable<T> queryable, Type typeOut, IOrder order)
+        private static IOrderedQueryable<T> ApplyFirstOrder<T>(IQueryable<T> queryable, Type typeOut, IOrder order)
         {
             var methodName = order.DirectionValue == SortDirection.Asc
                 ? nameof(Queryable.OrderBy)
