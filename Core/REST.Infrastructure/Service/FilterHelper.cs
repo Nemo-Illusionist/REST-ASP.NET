@@ -10,9 +10,9 @@ namespace REST.Infrastructure.Service
 {
     public class FilterHelper : IFilterHelper
     {
-        private readonly IFieldExpressionHelper _expressionHelper;
+        private readonly IExpressionHelper _expressionHelper;
 
-        public FilterHelper([NotNull] IFieldExpressionHelper expressionHelper)
+        public FilterHelper([NotNull] IExpressionHelper expressionHelper)
         {
             _expressionHelper = expressionHelper ?? throw new ArgumentNullException(nameof(expressionHelper));
         }

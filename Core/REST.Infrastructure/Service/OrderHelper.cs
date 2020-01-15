@@ -12,7 +12,7 @@ namespace REST.Infrastructure.Service
 {
     public class OrderHelper : IOrderHelper
     {
-        private readonly IFieldExpressionHelper _fieldExpressionHelper;
+        private readonly IExpressionHelper _expressionHelper;
         private static readonly IReadOnlyDictionary<string, MethodInfo> Methods = GetMethods();
 
         private static Dictionary<string, MethodInfo> GetMethods()
@@ -36,10 +36,10 @@ namespace REST.Infrastructure.Service
         }
 
 
-        public OrderHelper([NotNull] IFieldExpressionHelper fieldExpressionHelper)
+        public OrderHelper([NotNull] IExpressionHelper expressionHelper)
         {
-            _fieldExpressionHelper =
-                fieldExpressionHelper ?? throw new ArgumentNullException(nameof(fieldExpressionHelper));
+            _expressionHelper =
+                expressionHelper ?? throw new ArgumentNullException(nameof(expressionHelper));
         }
 
         public IQueryable<T> ApplyOrderBy<T>([NotNull] IQueryable<T> queryable, IOrder order)
@@ -86,7 +86,7 @@ namespace REST.Infrastructure.Service
         {
             var typeIn = type;
             var arg = Expression.Parameter(typeIn, "x");
-            var expr = _fieldExpressionHelper.ParsFieldToExpression(field, typeIn, arg);
+            var expr = _expressionHelper.ParsFieldToExpression(field, typeIn, arg);
 
             var lambda = Expression.Lambda(typeof(Func<,>).MakeGenericType(typeof(T), typeIn), expr, arg);
 

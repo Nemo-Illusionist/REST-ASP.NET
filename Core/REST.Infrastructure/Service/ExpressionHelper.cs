@@ -8,7 +8,7 @@ using REST.Infrastructure.Contract;
 
 namespace REST.Infrastructure.Service
 {
-    public class FieldExpressionHelper : IFieldExpressionHelper
+    public class ExpressionHelper : IExpressionHelper
     {
         public Expression ParsFieldToExpression([NotNull] string field, [NotNull] Type type,
             [NotNull] ParameterExpression param)
