@@ -12,6 +12,7 @@ namespace REST.Infrastructure.Service
 {
     public class OrderHelper : IOrderHelper
     {
+        private readonly IFieldExpressionHelper _fieldExpressionHelper;
         private static readonly IReadOnlyDictionary<string, MethodInfo> Methods = GetMethods();
 
         private static Dictionary<string, MethodInfo> GetMethods()
@@ -34,6 +35,12 @@ namespace REST.Infrastructure.Service
                                   && method.GetParameters().Length == 2);
         }
 
+
+        public OrderHelper([NotNull] IFieldExpressionHelper fieldExpressionHelper)
+        {
+            _fieldExpressionHelper =
+                fieldExpressionHelper ?? throw new ArgumentNullException(nameof(fieldExpressionHelper));
+        }
 
         public IQueryable<T> ApplyOrderBy<T>([NotNull] IQueryable<T> queryable, IOrder order)
         {
@@ -59,35 +66,27 @@ namespace REST.Infrastructure.Service
                 var methodName = order.DirectionValue == SortDirection.Asc
                     ? nameof(Queryable.ThenBy)
                     : nameof(Queryable.ThenByDescending);
-                orderedQueryable = ApplyOrder(orderedQueryable, type, methodName, order.SplitField());
+                orderedQueryable = ApplyOrder(orderedQueryable, type, methodName, order.Field);
             }
 
             return orderedQueryable;
         }
 
-        private static IOrderedQueryable<T> ApplyFirstOrder<T>(IQueryable<T> queryable, Type typeOut, IOrder order)
+        private IOrderedQueryable<T> ApplyFirstOrder<T>(IQueryable<T> queryable, Type typeOut, IOrder order)
         {
             var methodName = order.DirectionValue == SortDirection.Asc
                 ? nameof(Queryable.OrderBy)
                 : nameof(Queryable.OrderByDescending);
 
-            return ApplyOrder(queryable, typeOut, methodName, order.SplitField());
+            return ApplyOrder(queryable, typeOut, methodName, order.Field);
         }
 
-        private static IOrderedQueryable<T> ApplyOrder<T>(IQueryable<T> source, Type type, string methodName,
-            IEnumerable<string> props)
+        private IOrderedQueryable<T> ApplyOrder<T>(IQueryable<T> source, Type type, string methodName,
+            string field)
         {
             var typeIn = type;
             var arg = Expression.Parameter(typeIn, "x");
-            Expression expr = arg;
-            foreach (var prop in props)
-            {
-                var pi = typeIn.GetProperty(prop);
-                if (pi == null) continue;
-
-                expr = Expression.Property(expr, pi);
-                typeIn = pi.PropertyType;
-            }
+            var expr = _fieldExpressionHelper.ParsFieldToExpression(field, typeIn, arg);
 
             var lambda = Expression.Lambda(typeof(Func<,>).MakeGenericType(typeof(T), typeIn), expr, arg);
 

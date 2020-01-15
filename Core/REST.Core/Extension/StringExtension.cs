@@ -1,7 +1,7 @@
 using System;
 using System.Globalization;
 
-namespace REST.Infrastructure.Extension
+namespace REST.Core.Extension
 {
     public static class StringExtension
     {

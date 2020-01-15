@@ -10,6 +10,13 @@ namespace REST.Infrastructure.Service
 {
     public class FilterHelper : IFilterHelper
     {
+        private readonly IFieldExpressionHelper _expressionHelper;
+
+        public FilterHelper([NotNull] IFieldExpressionHelper expressionHelper)
+        {
+            _expressionHelper = expressionHelper ?? throw new ArgumentNullException(nameof(expressionHelper));
+        }
+
         public Expression<Func<T, bool>> ToExpression<T>(Filter filter)
         {
             var param = Expression.Parameter(typeof(T), "x");
@@ -48,8 +55,8 @@ namespace REST.Infrastructure.Service
 
         private Expression GetDefaultRestrictionExpression(Filter filter, ParameterExpression param, Type type)
         {
-            var field = filter.Field.ToUpperCaseFirstChar();
-            var prop = Expression.Property(param, field);
+            var field = filter.Field;
+            var prop = _expressionHelper.ParsFieldToExpression(field, type, param);
 
             var constant = CreateDefaultConstantExpression(filter, type, field);
 
@@ -73,7 +80,7 @@ namespace REST.Infrastructure.Service
                 case OperatorType.GreaterOrEqual:
                     return Expression.GreaterThanOrEqual(prop, constant);
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(filter.Operator));
+                    throw new ArgumentOutOfRangeException(nameof(filter));
             }
         }
 
@@ -131,7 +138,7 @@ namespace REST.Infrastructure.Service
             return Expression.Constant(value, propertyType);
         }
 
-        protected virtual Expression GetRestrictionExpression(string operatorValue, MemberExpression propertyExpression,
+        protected virtual Expression GetRestrictionExpression(string operatorValue, Expression propertyExpression,
             ConstantExpression constantExpression)
         {
             return null;
