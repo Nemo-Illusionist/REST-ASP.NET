@@ -63,15 +63,20 @@ namespace REST.Linq2DbCore.Provider
             }, (entity, ignoreSystemProps));
         }
 
-        public Task DeleteAsync<T>(T entity) where T : class, IEntity
+        public Task DeleteAsync<T>(T entity, CancellationToken token = default) where T : class, IEntity
         {
-            return ExecuteCommand(state => _dataConnection.DeleteAsync(state), entity);
+            return ExecuteCommand(state => _dataConnection.DeleteAsync(state.entity, token: state.token),
+                (entity, token));
         }
 
-        public Task DeleteByIdAsync<T, TKey>(TKey id) where T : class, IEntity, IEntity<TKey> where TKey : IComparable
+        public Task DeleteByIdAsync<T, TKey>(TKey id, CancellationToken token = default)
+            where T : class, IEntity, IEntity<TKey> where TKey : IComparable
         {
             return ExecuteCommand(
-                state => { return _dataConnection.GetTable<T>().Where(x => x.Id.Equals(state)).DeleteAsync(); }, id);
+                state =>
+                {
+                    return _dataConnection.GetTable<T>().Where(x => x.Id.Equals(state.id)).DeleteAsync(state.token);
+                }, (id, token));
         }
 
         public Task SetDeleteAsync<T, TKey>(TKey id) where T : class, IEntity, IDeletable, IEntity<TKey>
@@ -133,18 +138,27 @@ namespace REST.Linq2DbCore.Provider
             }, (entities, ignoreSystemProps));
         }
 
-        public Task BatchDeleteAsync<T>(IEnumerable<T> entities) where T : class, IEntity
+        public Task BatchDeleteAsync<T>(IEnumerable<T> entities, CancellationToken token = default)
+            where T : class, IEntity
         {
             return ExecuteCommand(
-                state => { return _dataConnection.GetTable<T>().Where(x => state.Any(x.Equals)).DeleteAsync(); },
-                entities);
+                state =>
+                {
+                    return _dataConnection.GetTable<T>().Where(x => state.entities.Any(x.Equals))
+                        .DeleteAsync(state.token);
+                },
+                (entities, token));
         }
 
-        public Task BatchDeleteByIdsAsync<T, TKey>(IEnumerable<TKey> ids) where T : class, IEntity, IEntity<TKey>
+        public Task BatchDeleteByIdsAsync<T, TKey>(IEnumerable<TKey> ids, CancellationToken token = default)
+            where T : class, IEntity, IEntity<TKey>
             where TKey : IComparable
         {
             return ExecuteCommand(
-                state => { return _dataConnection.GetTable<T>().Where(x => state.Contains(x.Id)).DeleteAsync(); }, ids);
+                state =>
+                {
+                    return _dataConnection.GetTable<T>().Where(x => state.ids.Contains(x.Id)).DeleteAsync(state.token);
+                }, (ids, token));
         }
 
         public Task BatchSetDeleteAsync<T, TKey>(IEnumerable<TKey> ids)
@@ -183,7 +197,8 @@ namespace REST.Linq2DbCore.Provider
             IsolationLevel level = IsolationLevel.RepeatableRead, int retryCount = 3, CancellationToken token = default)
         {
             var result = default(T);
-            async Task Wrapper(IDataProvider db, CancellationToken cancellationToken) => 
+
+            async Task Wrapper(IDataProvider db, CancellationToken cancellationToken) =>
                 result = await action(db, cancellationToken).ConfigureAwait(false);
 
             await SafeExecuteAsync(Wrapper, level, retryCount, token).ConfigureAwait(false);

@@ -71,24 +71,25 @@ namespace REST.EfCore.Provider
             }, (entity, ignoreSystemProps));
         }
 
-        public Task DeleteAsync<T>(T entity) where T : class, IEntity
+        public Task DeleteAsync<T>(T entity, CancellationToken token = default) where T : class, IEntity
         {
             return ExecuteCommand(state =>
             {
-                _dbContext.Set<T>().Remove(state);
-                return _dbContext.SaveChangesAsync();
-            }, entity);
+                _dbContext.Set<T>().Remove(state.entity);
+                return _dbContext.SaveChangesAsync(state.token);
+            }, (entity, token));
         }
 
-        public Task DeleteByIdAsync<T, TKey>(TKey id) where T : class, IEntity, IEntity<TKey> where TKey : IComparable
+        public Task DeleteByIdAsync<T, TKey>(TKey id, CancellationToken token = default)
+            where T : class, IEntity, IEntity<TKey> where TKey : IComparable
         {
             return ExecuteCommand(async state =>
             {
-                var entity = await _dbContext.Set<T>().Where(t => state.Equals(t.Id)).SingleAsync()
+                var entity = await _dbContext.Set<T>().Where(t => state.id.Equals(t.Id)).SingleAsync(state.token)
                     .ConfigureAwait(false);
                 _dbContext.Set<T>().Remove(entity);
-                return await _dbContext.SaveChangesAsync().ConfigureAwait(false);
-            }, id);
+                return await _dbContext.SaveChangesAsync(state.token).ConfigureAwait(false);
+            }, (id, token));
         }
 
         public Task SetDeleteAsync<T, TKey>(TKey id) where T : class, IEntity, IDeletable, IEntity<TKey>
@@ -147,25 +148,27 @@ namespace REST.EfCore.Provider
             }, (entities, ignoreSystemProps));
         }
 
-        public Task BatchDeleteAsync<T>(IEnumerable<T> entities) where T : class, IEntity
+        public Task BatchDeleteAsync<T>(IEnumerable<T> entities, CancellationToken token = default)
+            where T : class, IEntity
         {
             return ExecuteCommand(state =>
             {
-                _dbContext.Set<T>().RemoveRange(state);
-                return _dbContext.SaveChangesAsync();
-            }, entities);
+                _dbContext.Set<T>().RemoveRange(state.entities);
+                return _dbContext.SaveChangesAsync(state.token);
+            }, (entities, token));
         }
 
-        public Task BatchDeleteByIdsAsync<T, TKey>(IEnumerable<TKey> ids) where T : class, IEntity, IEntity<TKey>
+        public Task BatchDeleteByIdsAsync<T, TKey>(IEnumerable<TKey> ids, CancellationToken token = default)
+            where T : class, IEntity, IEntity<TKey>
             where TKey : IComparable
         {
             return ExecuteCommand(async state =>
             {
-                var entity = await _dbContext.Set<T>().Where(t => state.Contains(t.Id)).ToArrayAsync()
+                var entity = await _dbContext.Set<T>().Where(t => state.ids.Contains(t.Id)).ToArrayAsync(state.token)
                     .ConfigureAwait(false);
                 _dbContext.Set<T>().RemoveRange(entity);
-                return await _dbContext.SaveChangesAsync().ConfigureAwait(false);
-            }, ids);
+                return await _dbContext.SaveChangesAsync(state.token).ConfigureAwait(false);
+            }, (ids, token));
         }
 
         public Task BatchSetDeleteAsync<T, TKey>(IEnumerable<TKey> ids)
