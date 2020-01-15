@@ -43,24 +43,25 @@ namespace REST.Linq2DbCore.Provider
 
         #region Modify
 
-        public Task<T> InsertAsync<T>(T entity) where T : class, IEntity
+        public Task<T> InsertAsync<T>(T entity, CancellationToken token = default) where T : class, IEntity
         {
             return ExecuteCommand(async state =>
             {
-                state = SetSystemProps(state);
-                await _dataConnection.InsertAsync(state).ConfigureAwait(false);
-                return state;
-            }, entity);
+                state.entity = SetSystemProps(state.entity);
+                await _dataConnection.InsertAsync(state.entity, token: state.token).ConfigureAwait(false);
+                return state.entity;
+            }, (entity, token));
         }
 
-        public Task<T> UpdateAsync<T>(T entity, bool ignoreSystemProps = true) where T : class, IEntity
+        public Task<T> UpdateAsync<T>(T entity, bool ignoreSystemProps = true, CancellationToken token = default)
+            where T : class, IEntity
         {
             return ExecuteCommand(async state =>
             {
                 SetSystemPropsForUpdate(state.entity, state.ignoreSystemProps);
-                await _dataConnection.UpdateAsync(state.entity).ConfigureAwait(false);
+                await _dataConnection.UpdateAsync(state.entity, token: state.token).ConfigureAwait(false);
                 return state.entity;
-            }, (entity, ignoreSystemProps));
+            }, (entity, ignoreSystemProps, token));
         }
 
         public Task DeleteAsync<T>(T entity, CancellationToken token = default) where T : class, IEntity
@@ -79,51 +80,55 @@ namespace REST.Linq2DbCore.Provider
                 }, (id, token));
         }
 
-        public Task SetDeleteAsync<T, TKey>(TKey id) where T : class, IEntity, IDeletable, IEntity<TKey>
+        public Task SetDeleteAsync<T, TKey>(TKey id, CancellationToken token = default)
+            where T : class, IEntity, IDeletable, IEntity<TKey>
             where TKey : IComparable
         {
             return ExecuteCommand(state =>
             {
                 var queryable = _dataConnection.GetTable<T>()
-                    .Where(x => x.Id.Equals(state))
+                    .Where(x => x.Id.Equals(state.id))
                     .Set(x => x.DeletedUtc, DateTime.UtcNow);
 
                 queryable = SetUpdateUtc(queryable);
 
-                return queryable.UpdateAsync();
-            }, id);
+                return queryable.UpdateAsync(state.token);
+            }, (id, token));
         }
 
-        public Task SetUnDeleteAsync<T, TKey>(TKey id) where T : class, IEntity, IDeletable, IEntity<TKey>
+        public Task SetUnDeleteAsync<T, TKey>(TKey id, CancellationToken token = default)
+            where T : class, IEntity, IDeletable, IEntity<TKey>
             where TKey : IComparable
         {
             return ExecuteCommand(state =>
             {
                 var queryable = _dataConnection.GetTable<T>()
-                    .Where(x => x.Id.Equals(state))
+                    .Where(x => x.Id.Equals(state.id))
                     .Set(x => x.DeletedUtc, (DateTime?) null);
 
                 queryable = SetUpdateUtc(queryable);
 
-                return queryable.UpdateAsync();
-            }, id);
+                return queryable.UpdateAsync(state.token);
+            }, (id, token));
         }
 
         #endregion
 
         #region BatchModify
 
-        public Task BatchInsertAsync<T>(IEnumerable<T> entities) where T : class, IEntity
+        public Task BatchInsertAsync<T>(IEnumerable<T> entities, CancellationToken token = default)
+            where T : class, IEntity
         {
             return ExecuteCommand(states =>
             {
-                states = states.Select(SetSystemProps);
-                return Task.Factory.StartNew(() => _dataConnection.BulkCopy(states),
-                    CancellationToken.None, TaskCreationOptions.LongRunning, TaskScheduler.Default);
-            }, entities);
+                states.entities = states.entities.Select(SetSystemProps);
+                return Task.Factory.StartNew(() => _dataConnection.BulkCopy(states.entities), token,
+                    TaskCreationOptions.LongRunning, TaskScheduler.Default);
+            }, (entities, token));
         }
 
-        public Task BatchUpdateAsync<T>(IEnumerable<T> entities, bool ignoreSystemProps = true) where T : class, IEntity
+        public Task BatchUpdateAsync<T>(IEnumerable<T> entities, bool ignoreSystemProps = true,
+            CancellationToken token = default) where T : class, IEntity
         {
             return ExecuteCommand(async states =>
             {
@@ -131,11 +136,11 @@ namespace REST.Linq2DbCore.Provider
                 //todo: optimize
                 foreach (var entity in states.entities)
                 {
-                    await _dataConnection.UpdateAsync(entity).ConfigureAwait(false);
+                    await _dataConnection.UpdateAsync(entity, token: states.token).ConfigureAwait(false);
                 }
 
                 return new object();
-            }, (entities, ignoreSystemProps));
+            }, (entities, ignoreSystemProps, token));
         }
 
         public Task BatchDeleteAsync<T>(IEnumerable<T> entities, CancellationToken token = default)
@@ -161,34 +166,34 @@ namespace REST.Linq2DbCore.Provider
                 }, (ids, token));
         }
 
-        public Task BatchSetDeleteAsync<T, TKey>(IEnumerable<TKey> ids)
+        public Task BatchSetDeleteAsync<T, TKey>(IEnumerable<TKey> ids, CancellationToken token = default)
             where T : class, IEntity, IDeletable, IEntity<TKey> where TKey : IComparable
         {
             return ExecuteCommand(state =>
             {
                 var queryable = _dataConnection.GetTable<T>()
-                    .Where(x => ids.Contains(x.Id))
+                    .Where(x => state.ids.Contains(x.Id))
                     .Set(x => x.DeletedUtc, DateTime.UtcNow);
 
                 queryable = SetUpdateUtc(queryable);
 
-                return queryable.UpdateAsync();
-            }, ids);
+                return queryable.UpdateAsync(state.token);
+            }, (ids, token));
         }
 
-        public Task BatchSetUnDeleteAsync<T, TKey>(IEnumerable<TKey> ids)
+        public Task BatchSetUnDeleteAsync<T, TKey>(IEnumerable<TKey> ids, CancellationToken token = default)
             where T : class, IEntity, IDeletable, IEntity<TKey> where TKey : IComparable
         {
             return ExecuteCommand(state =>
             {
                 var queryable = _dataConnection.GetTable<T>()
-                    .Where(x => ids.Contains(x.Id))
+                    .Where(x => state.ids.Contains(x.Id))
                     .Set(x => x.DeletedUtc, (DateTime?) null);
 
                 queryable = SetUpdateUtc(queryable);
 
-                return queryable.UpdateAsync();
-            }, ids);
+                return queryable.UpdateAsync(state.token);
+            }, (ids, token));
         }
 
         #endregion
