@@ -179,19 +179,20 @@ namespace REST.Linq2DbCore.Provider
 
         #endregion
 
-        public async Task<T> SafeExecuteAsync<T>(Func<IDataProvider, Task<T>> action,
-            IsolationLevel level = IsolationLevel.RepeatableRead, int retryCount = 3)
+        public async Task<T> SafeExecuteAsync<T>([InstantHandle] Func<IDataProvider, CancellationToken, Task<T>> action,
+            IsolationLevel level = IsolationLevel.RepeatableRead, int retryCount = 3, CancellationToken token = default)
         {
             var result = default(T);
-            async Task Wrapper(IDataProvider db) => result = await action(db).ConfigureAwait(false);
+            async Task Wrapper(IDataProvider db, CancellationToken cancellationToken) => 
+                result = await action(db, cancellationToken).ConfigureAwait(false);
 
-            await SafeExecuteAsync(Wrapper, level, retryCount).ConfigureAwait(false);
+            await SafeExecuteAsync(Wrapper, level, retryCount, token).ConfigureAwait(false);
 
             return result;
         }
 
-        public async Task SafeExecuteAsync(Func<IDataProvider, Task> action,
-            IsolationLevel level = IsolationLevel.RepeatableRead, int retryCount = 3)
+        public async Task SafeExecuteAsync([InstantHandle] Func<IDataProvider, CancellationToken, Task> action,
+            IsolationLevel level = IsolationLevel.RepeatableRead, int retryCount = 3, CancellationToken token = default)
         {
             var count = 0;
             while (true)
@@ -199,15 +200,15 @@ namespace REST.Linq2DbCore.Provider
                 try
                 {
                     await using var transaction = Transaction(level);
-                    await action(this).ConfigureAwait(false);
-                    transaction.Commit();
+                    await action(this, token).ConfigureAwait(false);
+                    await transaction.CommitAsync(token).ConfigureAwait(false);
                     break;
                 }
                 catch (Exception exception)
                 {
                     if (_exceptionManager.IsConcurrentModifyException(exception) && ++count >= retryCount) throw;
 
-                    await Task.Delay(TimeSpan.FromSeconds(1)).ConfigureAwait(false);
+                    await Task.Delay(TimeSpan.FromSeconds(1), token).ConfigureAwait(false);
                 }
             }
         }
