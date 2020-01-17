@@ -6,7 +6,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 using REST.DataCore.Contract;
 using REST.DataCore.Contract.Entity;
 using REST.DataCore.Contract.Provider;
@@ -62,15 +61,14 @@ namespace REST.EfCore.Provider
             }, (entity, token));
         }
 
-        public Task<T> UpdateAsync<T>(T entity, bool ignoreSystemProps = true, CancellationToken token = default)
-            where T : class, IEntity
+        public Task<T> UpdateAsync<T>(T entity, CancellationToken token = default) where T : class, IEntity
         {
             return ExecuteCommand(async state =>
             {
-                UpdateEntity(state.entity, state.ignoreSystemProps);
+                UpdateEntity(state.entity);
                 await _dbContext.SaveChangesAsync(state.token).ConfigureAwait(false);
                 return state.entity;
-            }, (entity, ignoreSystemProps, token));
+            }, (entity, token));
         }
 
         public Task DeleteAsync<T>(T entity, CancellationToken token = default) where T : class, IEntity
@@ -103,7 +101,7 @@ namespace REST.EfCore.Provider
                 var entity = await _dbContext.Set<T>().Where(t => state.id.Equals(t.Id)).SingleAsync(state.token)
                     .ConfigureAwait(false);
                 entity.DeletedUtc = DateTime.UtcNow;
-                UpdateEntity(entity, false);
+                UpdateEntity(entity);
                 return await _dbContext.SaveChangesAsync(state.token).ConfigureAwait(false);
             }, (id, token));
         }
@@ -117,7 +115,7 @@ namespace REST.EfCore.Provider
                 var entity = await _dbContext.Set<T>().Where(t => state.id.Equals(t.Id)).SingleAsync(state.token)
                     .ConfigureAwait(false);
                 entity.DeletedUtc = null;
-                UpdateEntity(entity, false);
+                UpdateEntity(entity);
                 return await _dbContext.SaveChangesAsync(state.token).ConfigureAwait(false);
             }, (id, token));
         }
@@ -140,18 +138,18 @@ namespace REST.EfCore.Provider
             }, (entities, token));
         }
 
-        public Task BatchUpdateAsync<T>(IEnumerable<T> entities, bool ignoreSystemProps = true,
-            CancellationToken token = default) where T : class, IEntity
+        public Task BatchUpdateAsync<T>(IEnumerable<T> entities, CancellationToken token = default)
+            where T : class, IEntity
         {
             return ExecuteCommand(state =>
             {
                 foreach (var entity in state.entities)
                 {
-                    UpdateEntity(entity, state.ignoreSystemProps);
+                    UpdateEntity(entity);
                 }
 
                 return _dbContext.SaveChangesAsync(state.token);
-            }, (entities, ignoreSystemProps, token));
+            }, (entities, token));
         }
 
         public Task BatchDeleteAsync<T>(IEnumerable<T> entities, CancellationToken token = default)
@@ -188,7 +186,7 @@ namespace REST.EfCore.Provider
                 foreach (var entity in entities)
                 {
                     entity.DeletedUtc = DateTime.UtcNow;
-                    UpdateEntity(entity, false);
+                    UpdateEntity(entity);
                 }
 
                 return await _dbContext.SaveChangesAsync(state.token).ConfigureAwait(false);
@@ -206,7 +204,7 @@ namespace REST.EfCore.Provider
                 foreach (var entity in entities)
                 {
                     entity.DeletedUtc = null;
-                    UpdateEntity(entity, false);
+                    UpdateEntity(entity);
                 }
 
                 return await _dbContext.SaveChangesAsync(state.token).ConfigureAwait(false);
@@ -237,28 +235,15 @@ namespace REST.EfCore.Provider
             _dbContext.Set<T>().Add(entity);
         }
 
-        private void UpdateEntity<T>(T entity, bool ignoreSystemProps) where T : class
+        private void UpdateEntity<T>(T entity) where T : class
         {
             if (entity is IUpdatedUtc updatedUtc)
             {
                 updatedUtc.UpdatedUtc = DateTime.UtcNow;
             }
 
-            EntityEntry<T> entityEntry = _dbContext.Entry(entity);
+            var entityEntry = _dbContext.Entry(entity);
             entityEntry.State = EntityState.Modified;
-
-            if (ignoreSystemProps)
-            {
-                if (entity is IDeletable)
-                {
-                    entityEntry.Property(nameof(IDeletable.DeletedUtc)).IsModified = false;
-                }
-
-                if (entity is ICreatedUtc)
-                {
-                    entityEntry.Property(nameof(ICreatedUtc.CreatedUtc)).IsModified = false;
-                }
-            }
         }
 
         private async Task<T> ExecuteCommand<T, TState>(Func<TState, Task<T>> func, TState state)

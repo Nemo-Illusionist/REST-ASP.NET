@@ -14,11 +14,9 @@ namespace REST.DataCore.Contract.Provider
 
         Task BatchInsertAsync<T>(IEnumerable<T> entities, CancellationToken token = default) where T : class, IEntity;
 
-        Task<T> UpdateAsync<T>(T entity, bool ignoreSystemProps = true, CancellationToken token = default)
-            where T : class, IEntity;
+        Task<T> UpdateAsync<T>(T entity, CancellationToken token = default) where T : class, IEntity;
 
-        Task BatchUpdateAsync<T>(IEnumerable<T> entities, bool ignoreSystemProps = true,
-            CancellationToken token = default) where T : class, IEntity;
+        Task BatchUpdateAsync<T>(IEnumerable<T> entities, CancellationToken token = default) where T : class, IEntity;
 
         Task SetDeleteAsync<T, TKey>(TKey id, CancellationToken token = default)
             where T : class, IEntity, IDeletable, IEntity<TKey>

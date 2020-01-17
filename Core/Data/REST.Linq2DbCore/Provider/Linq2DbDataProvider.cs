@@ -55,21 +55,21 @@ namespace REST.Linq2DbCore.Provider
         {
             return ExecuteCommand(async state =>
             {
-                state.entity = SetSystemProps(state.entity);
+                SetSystemProps(state.entity);
                 await _dataConnection.InsertAsync(state.entity, token: state.token).ConfigureAwait(false);
                 return state.entity;
             }, (entity, token));
         }
 
-        public Task<T> UpdateAsync<T>(T entity, bool ignoreSystemProps = true, CancellationToken token = default)
+        public Task<T> UpdateAsync<T>(T entity, CancellationToken token = default)
             where T : class, IEntity
         {
             return ExecuteCommand(async state =>
             {
-                SetSystemPropsForUpdate(state.entity, state.ignoreSystemProps);
+                SetUpdatedUtc(state.entity);
                 await _dataConnection.UpdateAsync(state.entity, token: state.token).ConfigureAwait(false);
                 return state.entity;
-            }, (entity, ignoreSystemProps, token));
+            }, (entity, token));
         }
 
         public Task DeleteAsync<T>(T entity, CancellationToken token = default) where T : class, IEntity
@@ -135,20 +135,20 @@ namespace REST.Linq2DbCore.Provider
             }, (entities, token));
         }
 
-        public Task BatchUpdateAsync<T>(IEnumerable<T> entities, bool ignoreSystemProps = true,
-            CancellationToken token = default) where T : class, IEntity
+        public Task BatchUpdateAsync<T>(IEnumerable<T> entities, CancellationToken token = default)
+            where T : class, IEntity
         {
             return ExecuteCommand(async states =>
             {
-                states.entities = states.entities.Select(x => SetSystemPropsForUpdate(x, states.ignoreSystemProps));
                 //todo: optimize
                 foreach (var entity in states.entities)
                 {
+                    SetUpdatedUtc(entity);
                     await _dataConnection.UpdateAsync(entity, token: states.token).ConfigureAwait(false);
                 }
 
                 return new object();
-            }, (entities, ignoreSystemProps, token));
+            }, (entities, token));
         }
 
         public Task BatchDeleteAsync<T>(IEnumerable<T> entities, CancellationToken token = default)
@@ -216,7 +216,6 @@ namespace REST.Linq2DbCore.Provider
         {
             if (typeof(T).IsAssignableFrom(typeof(IUpdatedUtc)))
             {
-                // ReSharper disable once SuspiciousTypeConversion.Global
                 return updatable.Set(x => ((IUpdatedUtc) x).UpdatedUtc, DateTime.UtcNow);
             }
             else
@@ -232,24 +231,15 @@ namespace REST.Linq2DbCore.Provider
                 createdUtc.CreatedUtc = DateTime.UtcNow;
             }
 
-            if (entity is IUpdatedUtc updatedUtc)
-            {
-                updatedUtc.UpdatedUtc = DateTime.UtcNow;
-            }
-
+            entity = SetUpdatedUtc(entity);
             return entity;
         }
 
-        private T SetSystemPropsForUpdate<T>(T entity, bool ignoreSystemProps) where T : class
+        private T SetUpdatedUtc<T>(T entity) where T : class
         {
             if (entity is IUpdatedUtc updatedUtc)
             {
                 updatedUtc.UpdatedUtc = DateTime.UtcNow;
-            }
-
-            if (ignoreSystemProps)
-            {
-                //todo 
             }
 
             return entity;
