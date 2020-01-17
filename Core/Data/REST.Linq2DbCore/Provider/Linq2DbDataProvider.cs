@@ -12,13 +12,15 @@ using REST.DataCore.Contract;
 using REST.DataCore.Contract.Entity;
 using REST.DataCore.Contract.Provider;
 using REST.DataCore.Manager;
-using REST.DataCore.Provider;
 
 namespace REST.Linq2DbCore.Provider
 {
-    public class Linq2DbDataProvider : BaseSafeExecuteProvider, IDataProvider
+    public class Linq2DbDataProvider : IDataProvider
     {
         private readonly DataConnection _dataConnection;
+
+        [NotNull]
+        private readonly IDataExceptionManager _exceptionManager;
 
         public Linq2DbDataProvider([NotNull] DataConnection dataConnection)
             : this(dataConnection, new DefaultDataExceptionManager())
@@ -28,9 +30,9 @@ namespace REST.Linq2DbCore.Provider
         public Linq2DbDataProvider(
             [NotNull] DataConnection dataConnection,
             [NotNull] IDataExceptionManager exceptionManager)
-            : base(exceptionManager)
         {
             _dataConnection = dataConnection ?? throw new ArgumentNullException(nameof(dataConnection));
+            _exceptionManager = exceptionManager ?? throw new ArgumentNullException(nameof(exceptionManager));
         }
 
         public IDataTransaction Transaction()
@@ -206,12 +208,6 @@ namespace REST.Linq2DbCore.Provider
 
         #endregion
 
-        protected override void Reset()
-        {
-        }
-
-        protected override IDataProvider GetProvider() => this;
-
         private IUpdatable<T> SetUpdateUtc<T>(IUpdatable<T> updatable)
         {
             if (typeof(T).IsAssignableFrom(typeof(IUpdatedUtc)))
@@ -253,7 +249,7 @@ namespace REST.Linq2DbCore.Provider
             }
             catch (Exception exception)
             {
-                throw ExceptionManager.Normalize(exception);
+                throw _exceptionManager.Normalize(exception);
             }
         }
     }

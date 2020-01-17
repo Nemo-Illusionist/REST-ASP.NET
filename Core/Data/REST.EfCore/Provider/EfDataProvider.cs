@@ -10,15 +10,16 @@ using REST.DataCore.Contract;
 using REST.DataCore.Contract.Entity;
 using REST.DataCore.Contract.Provider;
 using REST.DataCore.Manager;
-using REST.DataCore.Provider;
 using REST.EfCore.Context;
 
 namespace REST.EfCore.Provider
 {
     [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
-    public class EfDataProvider : BaseSafeExecuteProvider, IDataProvider
+    public class EfDataProvider : IDataProvider
     {
         private readonly ResetDbContext _dbContext;
+        [NotNull]
+        private readonly IDataExceptionManager _exceptionManager;
 
         public EfDataProvider([NotNull] ResetDbContext connection) : this(connection, new DefaultDataExceptionManager())
         {
@@ -27,9 +28,9 @@ namespace REST.EfCore.Provider
         public EfDataProvider(
             [NotNull] ResetDbContext connection,
             [NotNull] IDataExceptionManager dataExceptionManager)
-            : base(dataExceptionManager)
         {
             _dbContext = connection ?? throw new ArgumentNullException(nameof(connection));
+            _exceptionManager = dataExceptionManager ?? throw new ArgumentNullException(nameof(dataExceptionManager));
         }
 
         public IDataTransaction Transaction()
@@ -213,13 +214,6 @@ namespace REST.EfCore.Provider
 
         #endregion
 
-        protected override void Reset()
-        {
-            _dbContext.Reset();
-        }
-
-        protected override IDataProvider GetProvider() => this;
-
         private void Add<T>(T entity) where T : class
         {
             if (entity is ICreatedUtc createdUtc)
@@ -254,7 +248,7 @@ namespace REST.EfCore.Provider
             }
             catch (Exception exception)
             {
-                throw ExceptionManager.Normalize(exception);
+                throw _exceptionManager.Normalize(exception);
             }
         }
     }
