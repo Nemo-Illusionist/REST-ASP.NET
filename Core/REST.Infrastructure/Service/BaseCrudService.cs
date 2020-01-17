@@ -15,35 +15,33 @@ using REST.Infrastructure.Extension;
 
 namespace REST.Infrastructure.Service
 {
-    public class BaseCrudService<TDb, TKey, TDto, TFullDto, TRequest>
-        : IBaseCrudService<TDb, TKey, TDto, TFullDto, TRequest>
+    public class BaseRoService<TDb, TKey, TDto, TFullDto> : IBaseRoService<TDb, TKey, TDto, TFullDto>
         where TDb : class, IEntity<TKey>
         where TKey : IComparable
         where TDto : class
         where TFullDto : class
-        where TRequest : class
     {
-        private readonly IDataProvider _dataProvider;
-        private readonly IAsyncHelpers _asyncHelpers;
-        private readonly IOrderHelper _orderHelper;
-        private readonly IMapper _mapper;
+        protected IDataProvider DataProvider { get; }
+        protected IAsyncHelpers AsyncHelpers { get; }
+        protected IOrderHelper OrderHelper { get; }
+        protected IMapper Mapper { get; }
 
-        public BaseCrudService([NotNull] IDataProvider dataProvider,
+        public BaseRoService([NotNull] IDataProvider dataProvider,
             [NotNull] IAsyncHelpers asyncHelpers,
             [NotNull] IOrderHelper orderHelper,
             [NotNull] IMapper mapper)
         {
-            _dataProvider = dataProvider ?? throw new ArgumentNullException(nameof(dataProvider));
-            _asyncHelpers = asyncHelpers ?? throw new ArgumentNullException(nameof(asyncHelpers));
-            _orderHelper = orderHelper ?? throw new ArgumentNullException(nameof(orderHelper));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            DataProvider = dataProvider ?? throw new ArgumentNullException(nameof(dataProvider));
+            AsyncHelpers = asyncHelpers ?? throw new ArgumentNullException(nameof(asyncHelpers));
+            OrderHelper = orderHelper ?? throw new ArgumentNullException(nameof(orderHelper));
+            Mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
         public Task<TFullDto> GetById(TKey id)
         {
-            var queryable = _dataProvider.GetQueryable<TDb>().Where(x => x.Id.Equals(id))
-                .ProjectTo<TFullDto>(_mapper);
-            return _asyncHelpers.SingleOrDefaultAsync(queryable);
+            var queryable = DataProvider.GetQueryable<TDb>().Where(x => x.Id.Equals(id))
+                .ProjectTo<TFullDto>(Mapper);
+            return AsyncHelpers.SingleOrDefaultAsync(queryable);
         }
 
         public async Task<PagedResult<TDto>> GetByFilter([NotNull] IPageFilter pageFilter,
@@ -58,28 +56,71 @@ namespace REST.Infrastructure.Service
 
             return new PagedResult<TDto>
             {
-                Data = await _asyncHelpers.ToArrayAsync(queryable).ConfigureAwait(false),
+                Data = await AsyncHelpers.ToArrayAsync(queryable).ConfigureAwait(false),
                 Meta = new Meta
                 {
                     Page = pageFilter.Page,
                     PageSize = pageFilter.PageSize,
-                    Count = await _asyncHelpers.LongCountAsync(queryableForCount).ConfigureAwait(false)
+                    Count = await AsyncHelpers.LongCountAsync(queryableForCount).ConfigureAwait(false)
                 }
             };
         }
 
+        private IQueryable<T> GetQueryable<T>(IPageFilter pageFilter, Expression<Func<T, bool>> filter,
+            IOrder[] orders, bool isCount)
+        {
+            var queryable = DataProvider.GetQueryable<TDb>().ProjectTo<T>(Mapper);
+
+            if (filter != null)
+            {
+                queryable = queryable.Where(filter);
+            }
+
+            if (!isCount)
+            {
+                if (orders != null && orders.Any())
+                {
+                    queryable = OrderHelper.ApplyOrderBy(queryable, orders);
+                }
+
+                if (pageFilter != null)
+                {
+                    queryable = queryable.FilterPage(pageFilter);
+                }
+            }
+
+            return queryable;
+        }
+    }
+
+    public class BaseCrudService<TDb, TKey, TDto, TFullDto, TRequest>
+        : BaseRoService<TDb, TKey, TDto, TFullDto>, IBaseCrudService<TDb, TKey, TDto, TFullDto, TRequest>
+        where TDb : class, IEntity<TKey>
+        where TKey : IComparable
+        where TDto : class
+        where TFullDto : class
+        where TRequest : class
+    {
+        public BaseCrudService([NotNull] IDataProvider dataProvider,
+            [NotNull] IAsyncHelpers asyncHelpers,
+            [NotNull] IOrderHelper orderHelper,
+            [NotNull] IMapper mapper)
+            : base(dataProvider, asyncHelpers, orderHelper, mapper)
+        {
+        }
+
         public async Task<TKey> Post(TRequest request)
         {
-            var db = _mapper.Map<TDb>(request);
-            await _dataProvider.InsertAsync(db).ConfigureAwait(false);
+            var db = Mapper.Map<TDb>(request);
+            await DataProvider.InsertAsync(db).ConfigureAwait(false);
             return db.Id;
         }
 
         public async Task<TKey> Put(TKey id, TRequest request)
         {
             var db = await GetDbById(id).ConfigureAwait(false);
-            db = _mapper.Map(request, db);
-            await _dataProvider.UpdateAsync(db).ConfigureAwait(false);
+            db = Mapper.Map(request, db);
+            await DataProvider.UpdateAsync(db).ConfigureAwait(false);
             return db.Id;
         }
 
@@ -89,7 +130,7 @@ namespace REST.Infrastructure.Service
 
             var db = await GetDbById(id).ConfigureAwait(false);
             db = request.ApplyTo(db);
-            await _dataProvider.UpdateAsync(db).ConfigureAwait(false);
+            await DataProvider.UpdateAsync(db).ConfigureAwait(false);
             return db.Id;
         }
 
@@ -109,40 +150,13 @@ namespace REST.Infrastructure.Service
             }
             else
             {
-                return _dataProvider.DeleteByIdAsync<TDb, TKey>(id);
+                return DataProvider.DeleteByIdAsync<TDb, TKey>(id);
             }
         }
 
         private Task<TDb> GetDbById(TKey id)
         {
-            return _asyncHelpers.SingleAsync(_dataProvider.GetQueryable<TDb>().Where(x => x.Id.Equals(id)));
-        }
-
-
-        private IQueryable<T> GetQueryable<T>(IPageFilter pageFilter, Expression<Func<T, bool>> filter,
-            IOrder[] orders, bool isCount)
-        {
-            var queryable = _dataProvider.GetQueryable<TDb>().ProjectTo<T>(_mapper);
-
-            if (filter != null)
-            {
-                queryable = queryable.Where(filter);
-            }
-
-            if (!isCount)
-            {
-                if (orders != null && orders.Any())
-                {
-                    queryable = _orderHelper.ApplyOrderBy(queryable, orders);
-                }
-
-                if (pageFilter != null)
-                {
-                    queryable = queryable.FilterPage(pageFilter);
-                }
-            }
-
-            return queryable;
+            return AsyncHelpers.SingleAsync(DataProvider.GetQueryable<TDb>().Where(x => x.Id.Equals(id)));
         }
     }
 }
