@@ -11,25 +11,26 @@ using REST.DataCore.Contract;
 using REST.DataCore.Contract.Entity;
 using REST.DataCore.Contract.Provider;
 using REST.DataCore.Manager;
+using REST.DataCore.Provider;
 using REST.EfCore.Context;
 
 namespace REST.EfCore.Provider
 {
     [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
-    public class EfDataProvider : IDataProvider, ISafeExecuteProvider
+    public class EfDataProvider : BaseSafeExecuteProvider, IDataProvider
     {
         private readonly ResetDbContext _dbContext;
-        private readonly IDataExceptionManager _dataExceptionManager;
 
         public EfDataProvider([NotNull] ResetDbContext connection) : this(connection, new DefaultDataExceptionManager())
         {
         }
 
-        public EfDataProvider([NotNull] ResetDbContext connection, [NotNull] IDataExceptionManager dataExceptionManager)
+        public EfDataProvider(
+            [NotNull] ResetDbContext connection,
+            [NotNull] IDataExceptionManager dataExceptionManager)
+            : base(dataExceptionManager)
         {
             _dbContext = connection ?? throw new ArgumentNullException(nameof(connection));
-            _dataExceptionManager =
-                dataExceptionManager ?? throw new ArgumentNullException(nameof(dataExceptionManager));
         }
 
         public IDataTransaction Transaction()
@@ -214,42 +215,12 @@ namespace REST.EfCore.Provider
 
         #endregion
 
-        public async Task<T> SafeExecuteAsync<T>([InstantHandle] Func<IDataProvider, CancellationToken, Task<T>> action,
-            IsolationLevel level = IsolationLevel.RepeatableRead, int retryCount = 3, CancellationToken token = default)
+        protected override void Reset()
         {
-            var result = default(T);
-
-            async Task Wrapper(IDataProvider db, CancellationToken cancellationToken) =>
-                result = await action(db, cancellationToken).ConfigureAwait(false);
-
-            await SafeExecuteAsync(Wrapper, level, retryCount, token).ConfigureAwait(false);
-
-            return result;
+            _dbContext.Reset();
         }
 
-        public async Task SafeExecuteAsync([InstantHandle] Func<IDataProvider, CancellationToken, Task> action,
-            IsolationLevel level = IsolationLevel.RepeatableRead, int retryCount = 3, CancellationToken token = default)
-        {
-            var count = 0;
-            while (true)
-            {
-                try
-                {
-                    await using var transaction = Transaction(level);
-                    await action(this, token).ConfigureAwait(false);
-                    await transaction.CommitAsync(token).ConfigureAwait(false);
-                    break;
-                }
-                catch (Exception exception)
-                {
-                    _dbContext.Reset();
-
-                    if (_dataExceptionManager.IsConcurrentModifyException(exception) && ++count >= retryCount) throw;
-
-                    await Task.Delay(TimeSpan.FromSeconds(1), token).ConfigureAwait(false);
-                }
-            }
-        }
+        protected override IDataProvider GetProvider() => this;
 
         private void Add<T>(T entity) where T : class
         {
@@ -298,7 +269,7 @@ namespace REST.EfCore.Provider
             }
             catch (Exception exception)
             {
-                throw _dataExceptionManager.Normalize(exception);
+                throw ExceptionManager.Normalize(exception);
             }
         }
     }

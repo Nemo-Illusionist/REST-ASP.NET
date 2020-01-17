@@ -11,18 +11,26 @@ using LinqToDB.Linq;
 using REST.DataCore.Contract;
 using REST.DataCore.Contract.Entity;
 using REST.DataCore.Contract.Provider;
+using REST.DataCore.Manager;
+using REST.DataCore.Provider;
 
 namespace REST.Linq2DbCore.Provider
 {
-    public class Linq2DbDataProvider : IDataProvider, ISafeExecuteProvider
+    public class Linq2DbDataProvider : BaseSafeExecuteProvider, IDataProvider
     {
         private readonly DataConnection _dataConnection;
-        private readonly IDataExceptionManager _exceptionManager;
 
-        public Linq2DbDataProvider(DataConnection dataConnection, [NotNull] IDataExceptionManager exceptionManager)
+        public Linq2DbDataProvider([NotNull] DataConnection dataConnection)
+            : this(dataConnection, new DefaultDataExceptionManager())
+        {
+        }
+
+        public Linq2DbDataProvider(
+            [NotNull] DataConnection dataConnection,
+            [NotNull] IDataExceptionManager exceptionManager)
+            : base(exceptionManager)
         {
             _dataConnection = dataConnection ?? throw new ArgumentNullException(nameof(dataConnection));
-            _exceptionManager = exceptionManager ?? throw new ArgumentNullException(nameof(exceptionManager));
         }
 
         public IDataTransaction Transaction()
@@ -198,40 +206,11 @@ namespace REST.Linq2DbCore.Provider
 
         #endregion
 
-        public async Task<T> SafeExecuteAsync<T>([InstantHandle] Func<IDataProvider, CancellationToken, Task<T>> action,
-            IsolationLevel level = IsolationLevel.RepeatableRead, int retryCount = 3, CancellationToken token = default)
+        protected override void Reset()
         {
-            var result = default(T);
-
-            async Task Wrapper(IDataProvider db, CancellationToken cancellationToken) =>
-                result = await action(db, cancellationToken).ConfigureAwait(false);
-
-            await SafeExecuteAsync(Wrapper, level, retryCount, token).ConfigureAwait(false);
-
-            return result;
         }
 
-        public async Task SafeExecuteAsync([InstantHandle] Func<IDataProvider, CancellationToken, Task> action,
-            IsolationLevel level = IsolationLevel.RepeatableRead, int retryCount = 3, CancellationToken token = default)
-        {
-            var count = 0;
-            while (true)
-            {
-                try
-                {
-                    await using var transaction = Transaction(level);
-                    await action(this, token).ConfigureAwait(false);
-                    await transaction.CommitAsync(token).ConfigureAwait(false);
-                    break;
-                }
-                catch (Exception exception)
-                {
-                    if (_exceptionManager.IsConcurrentModifyException(exception) && ++count >= retryCount) throw;
-
-                    await Task.Delay(TimeSpan.FromSeconds(1), token).ConfigureAwait(false);
-                }
-            }
-        }
+        protected override IDataProvider GetProvider() => this;
 
         private IUpdatable<T> SetUpdateUtc<T>(IUpdatable<T> updatable)
         {
@@ -284,7 +263,7 @@ namespace REST.Linq2DbCore.Provider
             }
             catch (Exception exception)
             {
-                throw _exceptionManager.Normalize(exception);
+                throw ExceptionManager.Normalize(exception);
             }
         }
     }
