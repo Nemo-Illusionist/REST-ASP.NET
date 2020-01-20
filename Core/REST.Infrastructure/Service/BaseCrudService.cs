@@ -19,18 +19,21 @@ namespace REST.Infrastructure.Service
         where TFullDto : class
         where TRequest : class
     {
+        private readonly IDataProvider _dataProvider;
+
         public BaseCrudService([NotNull] IDataProvider dataProvider,
             [NotNull] IAsyncHelpers asyncHelpers,
             [NotNull] IOrderHelper orderHelper,
             [NotNull] IMapper mapper)
             : base(dataProvider, asyncHelpers, orderHelper, mapper)
         {
+            _dataProvider = dataProvider ?? throw new ArgumentNullException(nameof(dataProvider));
         }
 
         public async Task<TKey> Post(TRequest request)
         {
             var db = Mapper.Map<TDb>(request);
-            await DataProvider.InsertAsync(db).ConfigureAwait(false);
+            await _dataProvider.InsertAsync(db).ConfigureAwait(false);
             return db.Id;
         }
 
@@ -38,7 +41,7 @@ namespace REST.Infrastructure.Service
         {
             var db = await GetDbById(id).ConfigureAwait(false);
             db = Mapper.Map(request, db);
-            await DataProvider.UpdateAsync(db).ConfigureAwait(false);
+            await _dataProvider.UpdateAsync(db).ConfigureAwait(false);
             return db.Id;
         }
 
@@ -48,7 +51,7 @@ namespace REST.Infrastructure.Service
 
             var db = await GetDbById(id).ConfigureAwait(false);
             db = request.ApplyTo(db);
-            await DataProvider.UpdateAsync(db).ConfigureAwait(false);
+            await _dataProvider.UpdateAsync(db).ConfigureAwait(false);
             return db.Id;
         }
 
@@ -68,13 +71,13 @@ namespace REST.Infrastructure.Service
             }
             else
             {
-                return DataProvider.DeleteByIdAsync<TDb, TKey>(id);
+                return _dataProvider.DeleteByIdAsync<TDb, TKey>(id);
             }
         }
 
         private Task<TDb> GetDbById(TKey id)
         {
-            return AsyncHelpers.SingleAsync(DataProvider.GetQueryable<TDb>().Where(x => x.Id.Equals(id)));
+            return AsyncHelpers.SingleAsync(_dataProvider.GetQueryable<TDb>().Where(x => x.Id.Equals(id)));
         }
     }
 }

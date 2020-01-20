@@ -20,25 +20,25 @@ namespace REST.Infrastructure.Service
         where TDto : class
         where TFullDto : class
     {
-        protected IDataProvider DataProvider { get; }
+        private readonly IRoDataProvider _dataProvider;
         protected IAsyncHelpers AsyncHelpers { get; }
-        protected IOrderHelper OrderHelper { get; }
+        private readonly IOrderHelper _orderHelper;
         protected IMapper Mapper { get; }
 
-        public BaseRoService([NotNull] IDataProvider dataProvider,
+        public BaseRoService([NotNull] IRoDataProvider dataProvider,
             [NotNull] IAsyncHelpers asyncHelpers,
             [NotNull] IOrderHelper orderHelper,
             [NotNull] IMapper mapper)
         {
-            DataProvider = dataProvider ?? throw new ArgumentNullException(nameof(dataProvider));
-            AsyncHelpers = asyncHelpers ?? throw new ArgumentNullException(nameof(asyncHelpers));
-            OrderHelper = orderHelper ?? throw new ArgumentNullException(nameof(orderHelper));
+            _dataProvider = dataProvider ?? throw new ArgumentNullException(nameof(dataProvider));
+            _orderHelper = orderHelper ?? throw new ArgumentNullException(nameof(orderHelper));
             Mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            AsyncHelpers = asyncHelpers ?? throw new ArgumentNullException(nameof(asyncHelpers));
         }
 
         public Task<TFullDto> GetById(TKey id)
         {
-            var queryable = DataProvider.GetQueryable<TDb>().Where(x => x.Id.Equals(id))
+            var queryable = _dataProvider.GetQueryable<TDb>().Where(x => x.Id.Equals(id))
                 .ProjectTo<TFullDto>(Mapper);
             return AsyncHelpers.SingleOrDefaultAsync(queryable);
         }
@@ -68,7 +68,7 @@ namespace REST.Infrastructure.Service
         private IQueryable<T> GetQueryable<T>(IPageFilter pageFilter, Expression<Func<T, bool>> filter,
             IOrder[] orders, bool isCount)
         {
-            var queryable = DataProvider.GetQueryable<TDb>().ProjectTo<T>(Mapper);
+            var queryable = _dataProvider.GetQueryable<TDb>().ProjectTo<T>(Mapper);
 
             if (filter != null)
             {
@@ -79,7 +79,7 @@ namespace REST.Infrastructure.Service
             {
                 if (orders != null && orders.Any())
                 {
-                    queryable = OrderHelper.ApplyOrderBy(queryable, orders);
+                    queryable = _orderHelper.ApplyOrderBy(queryable, orders);
                 }
 
                 if (pageFilter != null)
