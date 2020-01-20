@@ -22,11 +22,6 @@ namespace REST.Linq2DbCore.Provider
         [NotNull]
         private readonly IDataExceptionManager _exceptionManager;
 
-        public Linq2DbDataProvider([NotNull] DataConnection dataConnection)
-            : this(dataConnection, new DefaultDataExceptionManager())
-        {
-        }
-
         public Linq2DbDataProvider(
             [NotNull] DataConnection dataConnection,
             [NotNull] IDataExceptionManager exceptionManager)

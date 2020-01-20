@@ -3,7 +3,7 @@ using REST.EfCore.Contract;
 
 namespace REST.EfCore.Provider
 {
-    internal class DefaultIndexManager : IIndexManager
+    internal class DefaultIndexProvider : IIndexProvider
     {
         public IndexBuilder HasMethod(IndexBuilder indexBuilder, string attributeMethod)
         {

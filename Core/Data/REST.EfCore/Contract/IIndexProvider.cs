@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace REST.EfCore.Contract
 {
-    public interface IIndexManager
+    public interface IIndexProvider
     {
         IndexBuilder HasMethod(IndexBuilder indexBuilder, string attributeMethod);
     }

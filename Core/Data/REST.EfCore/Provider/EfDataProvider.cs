@@ -20,11 +20,7 @@ namespace REST.EfCore.Provider
         private readonly ResetDbContext _dbContext;
         [NotNull]
         private readonly IDataExceptionManager _exceptionManager;
-
-        public EfDataProvider([NotNull] ResetDbContext connection) : this(connection, new DefaultDataExceptionManager())
-        {
-        }
-
+        
         public EfDataProvider(
             [NotNull] ResetDbContext connection,
             [NotNull] IDataExceptionManager dataExceptionManager)

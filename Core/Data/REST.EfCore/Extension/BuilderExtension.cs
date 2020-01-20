@@ -27,11 +27,11 @@ namespace REST.EfCore.Extension
         }
 
         public static ModelBuilder BuildIndex([NotNull] this ModelBuilder builder, [NotNull] IModelStore modelStore,
-            IIndexManager indexManager = null)
+            IIndexProvider indexProvider = null)
         {
             if (builder == null) throw new ArgumentNullException(nameof(builder));
             if (modelStore == null) throw new ArgumentNullException(nameof(modelStore));
-            if (indexManager == null) indexManager = new DefaultIndexManager();
+            if (indexProvider == null) indexProvider = new DefaultIndexProvider();
 
             foreach (var type in modelStore.GetModels())
             {
@@ -57,7 +57,7 @@ namespace REST.EfCore.Extension
                     
                     if (!string.IsNullOrEmpty(attribute.Method))
                     {
-                        indexBuilder = indexManager.HasMethod(indexBuilder, attribute.Method);
+                        indexBuilder = indexProvider.HasMethod(indexBuilder, attribute.Method);
                     }
                 }
             }
@@ -76,7 +76,7 @@ namespace REST.EfCore.Extension
                 var properties = GetPropAttribute<AutoIncrementAttribute>(type);
                 foreach (var property in properties)
                 {
-                    builder.Entity(type).Property(property.Property.Name).ValueGeneratedNever();
+                    builder.Entity(type).Property(property.Property.Name).ValueGeneratedOnAdd();
                 }
             }
 
