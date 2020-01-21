@@ -9,7 +9,6 @@ using Microsoft.EntityFrameworkCore;
 using REST.DataCore.Contract;
 using REST.DataCore.Contract.Entity;
 using REST.DataCore.Contract.Provider;
-using REST.DataCore.Manager;
 using REST.EfCore.Context;
 
 namespace REST.EfCore.Provider
