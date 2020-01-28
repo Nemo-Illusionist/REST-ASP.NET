@@ -4,6 +4,7 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using AutoMapper;
 using JetBrains.Annotations;
+using REST.Core.Exception;
 using REST.DataCore.Contract;
 using REST.DataCore.Contract.Entity;
 using REST.DataCore.Contract.Provider;
@@ -40,7 +41,10 @@ namespace REST.Infrastructure.Service
         {
             var queryable = _dataProvider.GetQueryable<TDb>().Where(x => x.Id.Equals(id))
                 .ProjectTo<TFullDto>(Mapper);
-            return AsyncHelpers.SingleOrDefaultAsync(queryable);
+            var result = AsyncHelpers.SingleOrDefaultAsync(queryable);
+
+            if(result == null) throw new ItemNotFoundException();
+            return result;
         }
 
         public async Task<PagedResult<TDto>> GetByFilter([NotNull] IPageFilter pageFilter,
@@ -51,7 +55,6 @@ namespace REST.Infrastructure.Service
 
             var queryable = GetQueryable(pageFilter, filter, orders, false);
             var queryableForCount = GetQueryable(pageFilter, filter, orders, true);
-
 
             return new PagedResult<TDto>
             {
