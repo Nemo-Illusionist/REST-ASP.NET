@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using JetBrains.Annotations;
-using Morcatko.AspNetCore.JsonMergePatch;
 using REST.DataCore.Contract;
 using REST.DataCore.Contract.Entity;
 using REST.DataCore.Contract.Provider;
@@ -41,16 +40,6 @@ namespace REST.Infrastructure.Service
         {
             var db = await GetDbById(id).ConfigureAwait(false);
             db = Mapper.Map(request, db);
-            await _dataProvider.UpdateAsync(db).ConfigureAwait(false);
-            return db.Id;
-        }
-
-        public async Task<TKey> Patch(TKey id, [NotNull] JsonMergePatchDocument<TRequest> request)
-        {
-            if (request == null) throw new ArgumentNullException(nameof(request));
-
-            var db = await GetDbById(id).ConfigureAwait(false);
-            db = request.ApplyTo(db);
             await _dataProvider.UpdateAsync(db).ConfigureAwait(false);
             return db.Id;
         }

@@ -1,6 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using Morcatko.AspNetCore.JsonMergePatch;
 using REST.DataCore.Contract.Entity;
 
 namespace REST.Infrastructure.Contract
@@ -23,7 +22,6 @@ namespace REST.Infrastructure.Contract
     {
         Task<TKey> Post(TRequest request);
         Task<TKey> Put(TKey id, TRequest request);
-        Task<TKey> Patch(TKey id, JsonMergePatchDocument<TRequest> request);
         Task Delete(TKey id);
     }
 }
