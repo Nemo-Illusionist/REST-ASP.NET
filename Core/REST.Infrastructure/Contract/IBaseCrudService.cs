@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using REST.DataCore.Contract.Entity;
-
+    
 namespace REST.Infrastructure.Contract
 {
     public interface IBaseCrudService<TDb, TKey, TDto, TRequest> : IBaseCrudService<TDb, TKey, TDto, TDto, TRequest>,

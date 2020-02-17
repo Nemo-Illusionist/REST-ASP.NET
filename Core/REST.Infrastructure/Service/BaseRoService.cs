@@ -37,13 +37,13 @@ namespace REST.Infrastructure.Service
             AsyncHelpers = asyncHelpers ?? throw new ArgumentNullException(nameof(asyncHelpers));
         }
 
-        public Task<TFullDto> GetById(TKey id)
+        public async Task<TFullDto> GetById(TKey id)
         {
             var queryable = _dataProvider.GetQueryable<TDb>().Where(x => x.Id.Equals(id))
                 .ProjectTo<TFullDto>(Mapper);
-            var result = AsyncHelpers.SingleOrDefaultAsync(queryable);
+            var result = await AsyncHelpers.SingleOrDefaultAsync(queryable).ConfigureAwait(false);
 
-            if(result == null) throw new ItemNotFoundException();
+            if (result == null) throw new ItemNotFoundException();
             return result;
         }
 
