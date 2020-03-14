@@ -54,7 +54,7 @@ namespace REST.EfCore.Extension
                         .HasIndex(index.Select(x => x.Name).ToArray())
                         .HasName(attribute.IndexName)
                         .IsUnique(attribute.IsUnique);
-                    
+
                     if (!string.IsNullOrEmpty(attribute.Method))
                     {
                         indexBuilder = indexProvider.HasMethod(indexBuilder, attribute.Method);
@@ -78,6 +78,23 @@ namespace REST.EfCore.Extension
                 {
                     builder.Entity(type).Property(property.Property.Name).ValueGeneratedOnAdd();
                 }
+            }
+
+            return builder;
+        }
+
+        public static ModelBuilder BuildMultiKey([NotNull] this ModelBuilder builder,
+            [NotNull] IModelStore modelStore)
+        {
+            if (builder == null) throw new ArgumentNullException(nameof(builder));
+            if (modelStore == null) throw new ArgumentNullException(nameof(modelStore));
+
+            foreach (var type in modelStore.GetModels())
+            {
+                var properties = GetPropAttribute<MultiKeyAttribute>(type)
+                    .Select(p => p.Property.Name)
+                    .ToArray();
+                builder.Entity(type).HasKey(properties);
             }
 
             return builder;
