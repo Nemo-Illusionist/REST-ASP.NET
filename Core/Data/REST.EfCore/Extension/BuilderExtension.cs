@@ -94,6 +94,7 @@ namespace REST.EfCore.Extension
                 var properties = GetPropAttribute<MultiKeyAttribute>(type)
                     .Select(p => p.Property.Name)
                     .ToArray();
+                if (!properties.Any()) continue;
                 builder.Entity(type).HasKey(properties);
             }
 
