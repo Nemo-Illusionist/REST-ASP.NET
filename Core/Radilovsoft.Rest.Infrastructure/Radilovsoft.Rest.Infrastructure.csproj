@@ -6,16 +6,13 @@
     <AssemblyOriginatorKeyFile>REST ASP.NET.pfx</AssemblyOriginatorKeyFile>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Copyright>Radilov Peter</Copyright>
-    <DocumentationFile>REST.Infrastructure.xml</DocumentationFile>
+    <DocumentationFile>Radilovsoft.Rest.Infrastructure.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Data\REST.DataCore\Radilovsoft.Rest.Data.Core.csproj" />
-    <ProjectReference Include="..\Radilovsoft.Rest.Core\Radilovsoft.Rest.Core.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="AutoMapper" Version="9.0.0" />
+    <PackageReference Include="Radilovsoft.Rest.Core" Version="1.0.0" />
+    <PackageReference Include="Radilovsoft.Rest.Data.Core" Version="1.0.0" />
   </ItemGroup>
 
 </Project>

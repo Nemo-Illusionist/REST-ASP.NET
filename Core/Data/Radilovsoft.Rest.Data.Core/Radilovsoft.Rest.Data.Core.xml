@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <doc>
     <assembly>
-        <name>Radilovsoft.Rest.Data.Linq2Db</name>
+        <name>Radilovsoft.Rest.Data.Core</name>
     </assembly>
     <members>
     </members>
