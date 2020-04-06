@@ -10,7 +10,7 @@ namespace Radilovsoft.Rest.Data.Core.Manager
             return ex;
         }
 
-        public bool IsConcurrentModifyException(Exception ex)
+        public bool IsRepeatAction(Exception ex)
         {
             return true;
         }

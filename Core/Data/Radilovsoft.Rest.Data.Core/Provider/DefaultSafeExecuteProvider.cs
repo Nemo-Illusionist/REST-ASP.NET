@@ -1,5 +1,4 @@
 using System;
-using JetBrains.Annotations;
 using Radilovsoft.Rest.Data.Core.Contract;
 using Radilovsoft.Rest.Data.Core.Contract.Provider;
 
@@ -10,8 +9,8 @@ namespace Radilovsoft.Rest.Data.Core.Provider
         private readonly IDataProvider _dataProvider;
 
         public DefaultSafeExecuteProvider(
-            [NotNull] IDataProvider dataProvider,
-            [NotNull] IDataExceptionManager dataExceptionManager)
+            IDataProvider dataProvider,
+            IDataExceptionManager dataExceptionManager)
             : base(dataExceptionManager)
         {
             _dataProvider = dataProvider ?? throw new ArgumentNullException(nameof(dataProvider));

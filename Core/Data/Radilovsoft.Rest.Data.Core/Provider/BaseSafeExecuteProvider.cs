@@ -2,7 +2,6 @@ using System;
 using System.Data;
 using System.Threading;
 using System.Threading.Tasks;
-using JetBrains.Annotations;
 using Radilovsoft.Rest.Data.Core.Contract;
 using Radilovsoft.Rest.Data.Core.Contract.Provider;
 
@@ -12,29 +11,49 @@ namespace Radilovsoft.Rest.Data.Core.Provider
     {
         protected IDataExceptionManager ExceptionManager { get; }
 
-        protected BaseSafeExecuteProvider([NotNull] IDataExceptionManager dataExceptionManager)
+        protected BaseSafeExecuteProvider(IDataExceptionManager dataExceptionManager)
         {
             ExceptionManager = dataExceptionManager
                                ?? throw new ArgumentNullException(nameof(dataExceptionManager));
         }
 
+        public Task<T> SafeExecuteAsync<T>(
+            Func<IDataProvider, CancellationToken, Task<T>> func,
+            IsolationLevel level = IsolationLevel.RepeatableRead,
+            int retryCount = 3,
+            CancellationToken token = default)
+        {
+            return SafeExecuteAsync(func, GetProvider(), level, retryCount, token);
+        }
+
+
+        public Task SafeExecuteAsync(
+            Func<IDataProvider, CancellationToken, Task> func,
+            IsolationLevel level = IsolationLevel.RepeatableRead,
+            int retryCount = 3,
+            CancellationToken token = default)
+        {
+            return SafeExecuteAsync(func, GetProvider(), level, retryCount, token);
+        }
+
         public async Task<T> SafeExecuteAsync<T>(
-            [InstantHandle] Func<IDataProvider, CancellationToken, Task<T>> action,
+            Func<IDataProvider, CancellationToken, Task<T>> func,
+            IDataProvider provider,
             IsolationLevel level = IsolationLevel.RepeatableRead,
             int retryCount = 3,
             CancellationToken token = default)
         {
             var result = default(T);
-            await SafeExecuteAsync(Wrapper, level, retryCount, token).ConfigureAwait(false);
+            await SafeExecuteAsync(Wrapper, provider, level, retryCount, token).ConfigureAwait(false);
             return result;
 
             async Task Wrapper(IDataProvider db, CancellationToken ct) =>
-                result = await action(db, ct).ConfigureAwait(false);
+                result = await func(db, ct).ConfigureAwait(false);
         }
 
-
         public async Task SafeExecuteAsync(
-            [InstantHandle] Func<IDataProvider, CancellationToken, Task> action,
+            Func<IDataProvider, CancellationToken, Task> func,
+            IDataProvider provider,
             IsolationLevel level = IsolationLevel.RepeatableRead,
             int retryCount = 3,
             CancellationToken token = default)
@@ -44,9 +63,8 @@ namespace Radilovsoft.Rest.Data.Core.Provider
             {
                 try
                 {
-                    var provider = GetProvider();
                     await using var transaction = provider.Transaction(level);
-                    await action(provider, token).ConfigureAwait(false);
+                    await func(provider, token).ConfigureAwait(false);
                     await transaction.CommitAsync(token).ConfigureAwait(false);
                     break;
                 }
@@ -54,7 +72,7 @@ namespace Radilovsoft.Rest.Data.Core.Provider
                 {
                     Reset();
 
-                    if (ExceptionManager.IsConcurrentModifyException(exception) && ++count >= retryCount) throw;
+                    if (ExceptionManager.IsRepeatAction(exception) && ++count >= retryCount) throw;
 
                     await Task.Delay(TimeSpan.FromSeconds(1), token).ConfigureAwait(false);
                 }

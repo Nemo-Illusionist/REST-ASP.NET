@@ -11,7 +11,6 @@ using LinqToDB.Linq;
 using Radilovsoft.Rest.Data.Core.Contract;
 using Radilovsoft.Rest.Data.Core.Contract.Entity;
 using Radilovsoft.Rest.Data.Core.Contract.Provider;
-using Radilovsoft.Rest.Data.Core.Manager;
 
 namespace Radilovsoft.Rest.Data.Linq2Db.Provider
 {
