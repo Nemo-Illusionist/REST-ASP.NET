@@ -42,20 +42,19 @@ namespace Radilovsoft.Rest.Infrastructure.Service
                 expressionHelper ?? throw new ArgumentNullException(nameof(expressionHelper));
         }
 
-        public IQueryable<T> ApplyOrderBy<T>([NotNull] IQueryable<T> queryable, IOrder order)
+        public IOrderedQueryable<T> ApplyOrderBy<T>([NotNull] IQueryable<T> queryable, [NotNull] IOrder order)
         {
             if (queryable == null) throw new ArgumentNullException(nameof(queryable));
-            if (order == null) return queryable;
+            if (order == null) throw new ArgumentNullException(nameof(order));
 
             var type = typeof(T);
             return ApplyFirstOrder(queryable, type, order);
         }
 
-        public IQueryable<T> ApplyOrderBy<T>([NotNull] IQueryable<T> queryable, IOrder[] orders)
+        public IOrderedQueryable<T> ApplyOrderBy<T>([NotNull] IQueryable<T> queryable, [NotNull] IOrder[] orders)
         {
             if (queryable == null) throw new ArgumentNullException(nameof(queryable));
-
-            if (orders == null || !orders.Any()) return queryable;
+            if (orders == null || !orders.Any()) throw new ArgumentNullException(nameof(orders));
 
             var orderFirst = orders.First();
             var type = typeof(T);
