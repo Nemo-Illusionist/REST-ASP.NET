@@ -2,6 +2,13 @@
 
     <PropertyGroup>
         <TargetFramework>netcoreapp3.1</TargetFramework>
+        <Version>1.0.1</Version>
+        <SignAssembly>true</SignAssembly>
+        <AssemblyOriginatorKeyFile>REST ASP.NET.pfx</AssemblyOriginatorKeyFile>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+      <DocumentationFile>Radilovsoft.Rest.Data.Ef.Postgres.xml</DocumentationFile>
     </PropertyGroup>
 
     <ItemGroup>

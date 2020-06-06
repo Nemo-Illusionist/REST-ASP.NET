@@ -8,6 +8,7 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Copyright>Radilov Peter</Copyright>
     <DocumentationFile>Radilovsoft.Rest.Data.Linq2Db.xml</DocumentationFile>
+    <Version>1.0.1</Version>
   </PropertyGroup>
 
   <ItemGroup>
