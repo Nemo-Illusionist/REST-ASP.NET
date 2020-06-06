@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using JetBrains.Annotations;
-using Radilovsoft.Rest.Data.Core.Contract.Entity;
 using Radilovsoft.Rest.Data.Ef.Contract;
 
 namespace Radilovsoft.Rest.Data.Ef.Provider

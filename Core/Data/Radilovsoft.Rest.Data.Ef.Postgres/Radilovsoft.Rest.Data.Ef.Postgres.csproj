@@ -2,9 +2,10 @@
 
     <PropertyGroup>
         <TargetFramework>netcoreapp3.1</TargetFramework>
-        <Version>1.0.1</Version>
+        <Version>1.0.2</Version>
         <SignAssembly>true</SignAssembly>
         <AssemblyOriginatorKeyFile>REST ASP.NET.pfx</AssemblyOriginatorKeyFile>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -13,11 +14,8 @@
 
     <ItemGroup>
       <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="3.1.4" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <ProjectReference Include="..\Radilovsoft.Rest.Data.Ef\Radilovsoft.Rest.Data.Ef.csproj" />
-      <ProjectReference Include="..\Radilovsoft.Rest.Data.Postgres\Radilovsoft.Rest.Data.Postgres.csproj" />
+      <PackageReference Include="Radilovsoft.Rest.Data.Ef" Version="1.0.2" />
+      <PackageReference Include="Radilovsoft.Rest.Data.Postgres" Version="1.0.2" />
     </ItemGroup>
 
 </Project>

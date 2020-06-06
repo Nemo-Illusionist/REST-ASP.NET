@@ -40,14 +40,14 @@ namespace Radilovsoft.Rest.Data.Ef.Provider
             return new EfDataTransactionAdapter(transaction);
         }
 
-        public IQueryable<T> GetQueryable<T>() where T : class, IEntity
+        public IQueryable<T> GetQueryable<T>() where T : class
         {
             return _dbContext.Set<T>().AsQueryable().AsNoTracking();
         }
 
         #region Modify
 
-        public Task<T> InsertAsync<T>(T entity, CancellationToken token = default) where T : class, IEntity
+        public Task<T> InsertAsync<T>(T entity, CancellationToken token = default) where T : class
         {
             return ExecuteCommand(async state =>
             {
@@ -57,7 +57,7 @@ namespace Radilovsoft.Rest.Data.Ef.Provider
             }, (entity, token));
         }
 
-        public Task<T> UpdateAsync<T>(T entity, CancellationToken token = default) where T : class, IEntity
+        public Task<T> UpdateAsync<T>(T entity, CancellationToken token = default) where T : class
         {
             return ExecuteCommand(async state =>
             {
@@ -67,7 +67,7 @@ namespace Radilovsoft.Rest.Data.Ef.Provider
             }, (entity, token));
         }
 
-        public Task DeleteAsync<T>(T entity, CancellationToken token = default) where T : class, IEntity
+        public Task DeleteAsync<T>(T entity, CancellationToken token = default) where T : class
         {
             return ExecuteCommand(state =>
             {
@@ -77,7 +77,7 @@ namespace Radilovsoft.Rest.Data.Ef.Provider
         }
 
         public Task DeleteByIdAsync<T, TKey>(TKey id, CancellationToken token = default)
-            where T : class, IEntity, IEntity<TKey> where TKey : IComparable
+            where T : class, IEntity<TKey> where TKey : IComparable
         {
             return ExecuteCommand(async state =>
             {
@@ -89,7 +89,7 @@ namespace Radilovsoft.Rest.Data.Ef.Provider
         }
 
         public Task SetDeleteAsync<T, TKey>(TKey id, CancellationToken token = default)
-            where T : class, IEntity, IDeletable, IEntity<TKey>
+            where T : class, IDeletable, IEntity<TKey>
             where TKey : IComparable
         {
             return ExecuteCommand(async state =>
@@ -103,7 +103,7 @@ namespace Radilovsoft.Rest.Data.Ef.Provider
         }
 
         public Task SetUnDeleteAsync<T, TKey>(TKey id, CancellationToken token = default)
-            where T : class, IEntity, IDeletable, IEntity<TKey>
+            where T : class, IDeletable, IEntity<TKey>
             where TKey : IComparable
         {
             return ExecuteCommand(async state =>
@@ -121,7 +121,7 @@ namespace Radilovsoft.Rest.Data.Ef.Provider
         #region BatchModify
 
         public Task BatchInsertAsync<T>(IEnumerable<T> entities, CancellationToken token = default)
-            where T : class, IEntity
+            where T : class
         {
             return ExecuteCommand(state =>
             {
@@ -135,7 +135,7 @@ namespace Radilovsoft.Rest.Data.Ef.Provider
         }
 
         public Task BatchUpdateAsync<T>(IEnumerable<T> entities, CancellationToken token = default)
-            where T : class, IEntity
+            where T : class
         {
             return ExecuteCommand(state =>
             {
@@ -149,7 +149,7 @@ namespace Radilovsoft.Rest.Data.Ef.Provider
         }
 
         public Task BatchDeleteAsync<T>(IEnumerable<T> entities, CancellationToken token = default)
-            where T : class, IEntity
+            where T : class
         {
             return ExecuteCommand(state =>
             {
@@ -159,7 +159,7 @@ namespace Radilovsoft.Rest.Data.Ef.Provider
         }
 
         public Task BatchDeleteByIdsAsync<T, TKey>(IEnumerable<TKey> ids, CancellationToken token = default)
-            where T : class, IEntity, IEntity<TKey>
+            where T : class, IEntity<TKey>
             where TKey : IComparable
         {
             return ExecuteCommand(async state =>
@@ -172,7 +172,7 @@ namespace Radilovsoft.Rest.Data.Ef.Provider
         }
 
         public Task BatchSetDeleteAsync<T, TKey>(IEnumerable<TKey> ids, CancellationToken token = default)
-            where T : class, IEntity, IDeletable, IEntity<TKey> where TKey : IComparable
+            where T : class, IDeletable, IEntity<TKey> where TKey : IComparable
         {
             return ExecuteCommand(async state =>
             {
@@ -190,7 +190,7 @@ namespace Radilovsoft.Rest.Data.Ef.Provider
         }
 
         public Task BatchSetUnDeleteAsync<T, TKey>(IEnumerable<TKey> ids, CancellationToken token = default)
-            where T : class, IEntity, IDeletable, IEntity<TKey> where TKey : IComparable
+            where T : class, IDeletable, IEntity<TKey> where TKey : IComparable
         {
             return ExecuteCommand(async state =>
             {
