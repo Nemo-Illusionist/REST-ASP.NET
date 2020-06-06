@@ -14,6 +14,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Radilovsoft.Rest.Data.Linq2
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Radilovsoft.Rest.Infrastructure", "Core\Radilovsoft.Rest.Infrastructure\Radilovsoft.Rest.Infrastructure.csproj", "{5764077E-A7E1-4270-A678-E112E5DF7044}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Radilovsoft.Rest.Data.Postgres", "Core\Data\Radilovsoft.Rest.Data.Postgres\Radilovsoft.Rest.Data.Postgres.csproj", "{DF9F9FA5-37E9-4E2D-8592-1B8A89C2D2D6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -40,6 +42,10 @@ Global
 		{5764077E-A7E1-4270-A678-E112E5DF7044}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5764077E-A7E1-4270-A678-E112E5DF7044}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5764077E-A7E1-4270-A678-E112E5DF7044}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DF9F9FA5-37E9-4E2D-8592-1B8A89C2D2D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF9F9FA5-37E9-4E2D-8592-1B8A89C2D2D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF9F9FA5-37E9-4E2D-8592-1B8A89C2D2D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF9F9FA5-37E9-4E2D-8592-1B8A89C2D2D6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{E583D206-C2FB-4266-89AC-C7F8E2B8DAEA} = {5F77E2D9-2C25-431A-8BA8-4708052A8F10}
@@ -48,5 +54,6 @@ Global
 		{E5648684-953C-44FC-B49A-FC1550840744} = {8AA7FD13-118A-4E3B-BA61-B91590502BD8}
 		{3671A140-B86F-48B4-A8C8-AEFEA6541F35} = {8AA7FD13-118A-4E3B-BA61-B91590502BD8}
 		{5764077E-A7E1-4270-A678-E112E5DF7044} = {5F77E2D9-2C25-431A-8BA8-4708052A8F10}
+		{DF9F9FA5-37E9-4E2D-8592-1B8A89C2D2D6} = {8AA7FD13-118A-4E3B-BA61-B91590502BD8}
 	EndGlobalSection
 EndGlobal
