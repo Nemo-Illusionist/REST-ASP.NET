@@ -37,7 +37,7 @@ namespace Radilovsoft.Rest.Infrastructure.Service
             AsyncHelpers = asyncHelpers ?? throw new ArgumentNullException(nameof(asyncHelpers));
         }
 
-        public async Task<TFullDto> GetById(TKey id)
+        public virtual async Task<TFullDto> GetById(TKey id)
         {
             var queryable = _dataProvider.GetQueryable<TDb>().Where(x => x.Id.Equals(id))
                 .ProjectTo<TFullDto>(Mapper);
@@ -47,7 +47,7 @@ namespace Radilovsoft.Rest.Infrastructure.Service
             return result;
         }
 
-        public async Task<PagedResult<TDto>> GetByFilter([NotNull] IPageFilter pageFilter,
+        public virtual async Task<PagedResult<TDto>> GetByFilter([NotNull] IPageFilter pageFilter,
             Expression<Func<TDto, bool>> filter = null,
             IOrder[] orders = null)
         {

@@ -29,14 +29,14 @@ namespace Radilovsoft.Rest.Infrastructure.Service
             _dataProvider = dataProvider ?? throw new ArgumentNullException(nameof(dataProvider));
         }
 
-        public async Task<TKey> Post(TRequest request)
+        public virtual async Task<TKey> Post(TRequest request)
         {
             var db = Mapper.Map<TDb>(request);
             await _dataProvider.InsertAsync(db).ConfigureAwait(false);
             return db.Id;
         }
 
-        public async Task<TKey> Put(TKey id, TRequest request)
+        public virtual async Task<TKey> Put(TKey id, TRequest request)
         {
             var db = await GetDbById(id).ConfigureAwait(false);
             db = Mapper.Map(request, db);
@@ -44,7 +44,7 @@ namespace Radilovsoft.Rest.Infrastructure.Service
             return db.Id;
         }
 
-        public Task Delete(TKey id)
+        public virtual Task Delete(TKey id)
         {
             if (typeof(TDb).IsAssignableFrom(typeof(IDeletable)))
             {
