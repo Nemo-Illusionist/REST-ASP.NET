@@ -21,9 +21,9 @@ namespace Radilovsoft.Rest.Infrastructure.Service
         where TDto : class
         where TFullDto : class
     {
-        private readonly IRoDataProvider _dataProvider;
+        protected IRoDataProvider RoDataProvider { get; }
         protected IAsyncHelpers AsyncHelpers { get; }
-        private readonly IOrderHelper _orderHelper;
+        protected IOrderHelper OrderHelper { get; }
         protected IMapper Mapper { get; }
 
         public BaseRoService([NotNull] IRoDataProvider dataProvider,
@@ -31,15 +31,15 @@ namespace Radilovsoft.Rest.Infrastructure.Service
             [NotNull] IOrderHelper orderHelper,
             [NotNull] IMapper mapper)
         {
-            _dataProvider = dataProvider ?? throw new ArgumentNullException(nameof(dataProvider));
-            _orderHelper = orderHelper ?? throw new ArgumentNullException(nameof(orderHelper));
+            RoDataProvider = dataProvider ?? throw new ArgumentNullException(nameof(dataProvider));
+            OrderHelper = orderHelper ?? throw new ArgumentNullException(nameof(orderHelper));
             Mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             AsyncHelpers = asyncHelpers ?? throw new ArgumentNullException(nameof(asyncHelpers));
         }
 
         public virtual async Task<TFullDto> GetById(TKey id)
         {
-            var queryable = _dataProvider.GetQueryable<TDb>().Where(x => x.Id.Equals(id))
+            var queryable = RoDataProvider.GetQueryable<TDb>().Where(x => x.Id.Equals(id))
                 .ProjectTo<TFullDto>(Mapper);
             var result = await AsyncHelpers.SingleOrDefaultAsync(queryable).ConfigureAwait(false);
 
@@ -71,7 +71,7 @@ namespace Radilovsoft.Rest.Infrastructure.Service
         private IQueryable<T> GetQueryable<T>(IPageFilter pageFilter, Expression<Func<T, bool>> filter,
             IOrder[] orders, bool isCount)
         {
-            var queryable = _dataProvider.GetQueryable<TDb>().ProjectTo<T>(Mapper);
+            var queryable = RoDataProvider.GetQueryable<TDb>().ProjectTo<T>(Mapper);
 
             if (filter != null)
             {
@@ -82,7 +82,7 @@ namespace Radilovsoft.Rest.Infrastructure.Service
             {
                 if (orders != null && orders.Any())
                 {
-                    queryable = _orderHelper.ApplyOrderBy(queryable, orders);
+                    queryable = OrderHelper.ApplyOrderBy(queryable, orders);
                 }
 
                 if (pageFilter != null)
