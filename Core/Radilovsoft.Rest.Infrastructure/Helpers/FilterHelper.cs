@@ -6,7 +6,7 @@ using Radilovsoft.Rest.Infrastructure.Contract;
 using Radilovsoft.Rest.Infrastructure.Dto;
 using Radilovsoft.Rest.Infrastructure.Extension;
 
-namespace Radilovsoft.Rest.Infrastructure.Service
+namespace Radilovsoft.Rest.Infrastructure.Helpers
 {
     public class FilterHelper : IFilterHelper
     {

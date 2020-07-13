@@ -6,7 +6,7 @@ using JetBrains.Annotations;
 using Radilovsoft.Rest.Core.Extension;
 using Radilovsoft.Rest.Infrastructure.Contract;
 
-namespace Radilovsoft.Rest.Infrastructure.Service
+namespace Radilovsoft.Rest.Infrastructure.Helpers
 {
     public class ExpressionHelper : IExpressionHelper
     {

@@ -8,7 +8,7 @@ using Radilovsoft.Rest.Infrastructure.Contract;
 using Radilovsoft.Rest.Infrastructure.Contract.Dto;
 using Radilovsoft.Rest.Infrastructure.Dto;
 
-namespace Radilovsoft.Rest.Infrastructure.Service
+namespace Radilovsoft.Rest.Infrastructure.Helpers
 {
     public class OrderHelper : IOrderHelper
     {
@@ -83,9 +83,9 @@ namespace Radilovsoft.Rest.Infrastructure.Service
         private IOrderedQueryable<T> ApplyOrder<T>(IQueryable<T> source, Type type, string methodName,
             string field)
         {
-            var typeIn = type;
-            var arg = Expression.Parameter(typeIn, "x");
-            var expr = _expressionHelper.ParsFieldToExpression(field, typeIn, arg);
+            var typeIn = type.GetProperty(field).PropertyType;
+            var arg = Expression.Parameter(type, "x");
+            var expr = _expressionHelper.ParsFieldToExpression(field, type, arg);
 
             var lambda = Expression.Lambda(typeof(Func<,>).MakeGenericType(typeof(T), typeIn), expr, arg);
 

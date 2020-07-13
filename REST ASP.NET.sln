@@ -1,22 +1,29 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30225.117
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{5F77E2D9-2C25-431A-8BA8-4708052A8F10}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Data", "Data", "{8AA7FD13-118A-4E3B-BA61-B91590502BD8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Radilovsoft.Rest.Data.Ef", "Core\Data\Radilovsoft.Rest.Data.Ef\Radilovsoft.Rest.Data.Ef.csproj", "{E5648684-953C-44FC-B49A-FC1550840744}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Radilovsoft.Rest.Data.Ef", "Core\Data\Radilovsoft.Rest.Data.Ef\Radilovsoft.Rest.Data.Ef.csproj", "{E5648684-953C-44FC-B49A-FC1550840744}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Radilovsoft.Rest.Data.Core", "Core\Data\Radilovsoft.Rest.Data.Core\Radilovsoft.Rest.Data.Core.csproj", "{ED7AA8CD-2020-4D69-84B1-54465C5360B8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Radilovsoft.Rest.Data.Core", "Core\Data\Radilovsoft.Rest.Data.Core\Radilovsoft.Rest.Data.Core.csproj", "{ED7AA8CD-2020-4D69-84B1-54465C5360B8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Radilovsoft.Rest.Core", "Core\Radilovsoft.Rest.Core\Radilovsoft.Rest.Core.csproj", "{E583D206-C2FB-4266-89AC-C7F8E2B8DAEA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Radilovsoft.Rest.Core", "Core\Radilovsoft.Rest.Core\Radilovsoft.Rest.Core.csproj", "{E583D206-C2FB-4266-89AC-C7F8E2B8DAEA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Radilovsoft.Rest.Data.Linq2Db", "Core\Data\Radilovsoft.Rest.Data.Linq2Db\Radilovsoft.Rest.Data.Linq2Db.csproj", "{3671A140-B86F-48B4-A8C8-AEFEA6541F35}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Radilovsoft.Rest.Data.Linq2Db", "Core\Data\Radilovsoft.Rest.Data.Linq2Db\Radilovsoft.Rest.Data.Linq2Db.csproj", "{3671A140-B86F-48B4-A8C8-AEFEA6541F35}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Radilovsoft.Rest.Infrastructure", "Core\Radilovsoft.Rest.Infrastructure\Radilovsoft.Rest.Infrastructure.csproj", "{5764077E-A7E1-4270-A678-E112E5DF7044}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Radilovsoft.Rest.Infrastructure", "Core\Radilovsoft.Rest.Infrastructure\Radilovsoft.Rest.Infrastructure.csproj", "{5764077E-A7E1-4270-A678-E112E5DF7044}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Radilovsoft.Rest.Data.Postgres", "Core\Data\Radilovsoft.Rest.Data.Postgres\Radilovsoft.Rest.Data.Postgres.csproj", "{DF9F9FA5-37E9-4E2D-8592-1B8A89C2D2D6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Radilovsoft.Rest.Data.Postgres", "Core\Data\Radilovsoft.Rest.Data.Postgres\Radilovsoft.Rest.Data.Postgres.csproj", "{DF9F9FA5-37E9-4E2D-8592-1B8A89C2D2D6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Radilovsoft.Rest.Data.Ef.Postgres", "Core\Data\Radilovsoft.Rest.Data.Ef.Postgres\Radilovsoft.Rest.Data.Ef.Postgres.csproj", "{69F04E02-DCBB-4C19-96B3-B8FA94A7F2CA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Radilovsoft.Rest.Data.Ef.Postgres", "Core\Data\Radilovsoft.Rest.Data.Ef.Postgres\Radilovsoft.Rest.Data.Ef.Postgres.csproj", "{69F04E02-DCBB-4C19-96B3-B8FA94A7F2CA}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{331EA874-01AC-4B3C-84DE-5E13C77B5505}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Radilovsoft.Rest.Infrastructure.Test", "Radilovsoft.Rest.Infrastructure.Test\Radilovsoft.Rest.Infrastructure.Test.csproj", "{D75387D4-4E7A-4DCA-BD57-7DF585DBFC12}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -52,15 +59,26 @@ Global
 		{69F04E02-DCBB-4C19-96B3-B8FA94A7F2CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{69F04E02-DCBB-4C19-96B3-B8FA94A7F2CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{69F04E02-DCBB-4C19-96B3-B8FA94A7F2CA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D75387D4-4E7A-4DCA-BD57-7DF585DBFC12}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D75387D4-4E7A-4DCA-BD57-7DF585DBFC12}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D75387D4-4E7A-4DCA-BD57-7DF585DBFC12}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{D75387D4-4E7A-4DCA-BD57-7DF585DBFC12}.Release|Any CPU.Build.0 = Debug|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{E583D206-C2FB-4266-89AC-C7F8E2B8DAEA} = {5F77E2D9-2C25-431A-8BA8-4708052A8F10}
 		{8AA7FD13-118A-4E3B-BA61-B91590502BD8} = {5F77E2D9-2C25-431A-8BA8-4708052A8F10}
-		{ED7AA8CD-2020-4D69-84B1-54465C5360B8} = {8AA7FD13-118A-4E3B-BA61-B91590502BD8}
 		{E5648684-953C-44FC-B49A-FC1550840744} = {8AA7FD13-118A-4E3B-BA61-B91590502BD8}
+		{ED7AA8CD-2020-4D69-84B1-54465C5360B8} = {8AA7FD13-118A-4E3B-BA61-B91590502BD8}
+		{E583D206-C2FB-4266-89AC-C7F8E2B8DAEA} = {5F77E2D9-2C25-431A-8BA8-4708052A8F10}
 		{3671A140-B86F-48B4-A8C8-AEFEA6541F35} = {8AA7FD13-118A-4E3B-BA61-B91590502BD8}
 		{5764077E-A7E1-4270-A678-E112E5DF7044} = {5F77E2D9-2C25-431A-8BA8-4708052A8F10}
 		{DF9F9FA5-37E9-4E2D-8592-1B8A89C2D2D6} = {8AA7FD13-118A-4E3B-BA61-B91590502BD8}
 		{69F04E02-DCBB-4C19-96B3-B8FA94A7F2CA} = {8AA7FD13-118A-4E3B-BA61-B91590502BD8}
+		{D75387D4-4E7A-4DCA-BD57-7DF585DBFC12} = {331EA874-01AC-4B3C-84DE-5E13C77B5505}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {83D3D1A1-6B65-4A88-8E28-3EDD91DF2795}
 	EndGlobalSection
 EndGlobal
