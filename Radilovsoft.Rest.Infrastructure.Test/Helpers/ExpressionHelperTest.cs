@@ -26,7 +26,7 @@ namespace Radilovsoft.Rest.Infrastructure.Test.Helpers
             Assert.NotNull(parsFieldToExpression);
             var expression = Expression.Lambda<Func<TestDto, Guid>>(parsFieldToExpression, arg);
             var value = expression.Compile().Invoke(testDto);
-            Assert.IsTrue(value == testDto.SubTest.Id);
+            Assert.IsTrue(value == testDto.Id);
         }
         
         [Test]

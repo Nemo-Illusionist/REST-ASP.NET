@@ -16,11 +16,19 @@ namespace Radilovsoft.Rest.Infrastructure.Test.Helpers
         [SetUp]
         public void SetUp()
         {
+            var gen = new Random();
             _orderHelper = new OrderHelper(new ExpressionHelper());
             _queryable = Enumerable.Range(0, 10)
-                .Select(x => new TestDto {Id = Guid.NewGuid(), Name = $"name{x}", CreatedUtc = DateTime.UtcNow})
+                .Select(x => new TestDto {Id = Guid.NewGuid(), Name = $"name{x}", CreatedUtc = RandomDay(gen)})
                 .ToArray()
                 .AsQueryable();
+        }
+
+        private static DateTime RandomDay(Random gen)
+        {
+            var start = new DateTime(1995, 1, 1);
+            var range = (DateTime.Today - start).Days;
+            return start.AddDays(gen.Next(range));
         }
 
         [Test]

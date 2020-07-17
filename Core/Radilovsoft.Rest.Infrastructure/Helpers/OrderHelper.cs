@@ -83,7 +83,7 @@ namespace Radilovsoft.Rest.Infrastructure.Helpers
         private IOrderedQueryable<T> ApplyOrder<T>(IQueryable<T> source, Type type, string methodName,
             string field)
         {
-            var typeIn = type.GetProperty(field).PropertyType;
+            var typeIn = type.GetProperty(field)?.PropertyType ?? throw new ArgumentException(nameof(field));
             var arg = Expression.Parameter(type, "x");
             var expr = _expressionHelper.ParsFieldToExpression(field, type, arg);
 
