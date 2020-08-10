@@ -84,7 +84,7 @@ namespace Radilovsoft.Rest.Infrastructure.Helpers
             }
         }
 
-        protected virtual OperatorType ParsValue([NotNull] string operatorValue)
+        private OperatorType ParsValue(string operatorValue)
         {
             if (string.IsNullOrEmpty(operatorValue))
             {

@@ -1,4 +1,5 @@
 using JetBrains.Annotations;
+using Radilovsoft.Rest.Data.Core.Contract.Entity;
 
 namespace Radilovsoft.Rest.Infrastructure.Dto
 {
@@ -19,16 +20,17 @@ namespace Radilovsoft.Rest.Infrastructure.Dto
             {
                 Left = f1,
                 Right = f2,
-                Operator = GroupOperatorType.And.ToString() 
+                Operator = GroupOperatorType.And.ToString()
             };
         }
+
         public static Filter operator |(Filter f1, Filter f2)
         {
             return new Filter
             {
                 Left = f1,
                 Right = f2,
-                Operator = GroupOperatorType.Or.ToString() 
+                Operator = GroupOperatorType.Or.ToString()
             };
         }
     }

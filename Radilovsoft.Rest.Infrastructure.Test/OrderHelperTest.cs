@@ -5,8 +5,9 @@ using NUnit.Framework;
 using Radilovsoft.Rest.Infrastructure.Contract.Dto;
 using Radilovsoft.Rest.Infrastructure.Dto;
 using Radilovsoft.Rest.Infrastructure.Helpers;
+using Radilovsoft.Rest.Infrastructure.Test.Helpers;
 
-namespace Radilovsoft.Rest.Infrastructure.Test.Helpers
+namespace Radilovsoft.Rest.Infrastructure.Test
 {
     public class OrderHelperTest
     {
@@ -22,13 +23,6 @@ namespace Radilovsoft.Rest.Infrastructure.Test.Helpers
                 .Select(x => new TestDto {Id = Guid.NewGuid(), Name = $"name{x}", CreatedUtc = RandomDay(gen)})
                 .ToArray()
                 .AsQueryable();
-        }
-
-        private static DateTime RandomDay(Random gen)
-        {
-            var start = new DateTime(1995, 1, 1);
-            var range = (DateTime.Today - start).Days;
-            return start.AddDays(gen.Next(range));
         }
 
         [Test]
@@ -55,6 +49,13 @@ namespace Radilovsoft.Rest.Infrastructure.Test.Helpers
             var queryable2 = _queryable.OrderByDescending(x => x.Name).ThenBy(x => x.CreatedUtc).ToArray();
 
             Equally(queryable2, queryable1);
+        }
+
+        private static DateTime RandomDay(Random gen)
+        {
+            var start = new DateTime(1995, 1, 1);
+            var range = (DateTime.Today - start).Days;
+            return start.AddDays(gen.Next(range));
         }
 
         private static void Equally(IReadOnlyList<TestDto> queryable2, IReadOnlyList<TestDto> queryable1)
