@@ -5,6 +5,8 @@ namespace Radilovsoft.Rest.Infrastructure.Test.Helpers
     public class TestDto
     {
         public Guid Id { get; set; }
+        
+        public int Order { get; set; }
 
         public string Name { get; set; }
 

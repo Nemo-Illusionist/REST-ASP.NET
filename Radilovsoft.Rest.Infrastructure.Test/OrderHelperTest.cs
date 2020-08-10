@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using Radilovsoft.Rest.Infrastructure.Contract.Dto;
@@ -9,7 +8,7 @@ using Radilovsoft.Rest.Infrastructure.Test.Helpers;
 
 namespace Radilovsoft.Rest.Infrastructure.Test
 {
-    public class OrderHelperTest
+    public class OrderHelperTest : BaseHelperTest
     {
         private OrderHelper _orderHelper;
         private IQueryable<TestDto> _queryable;
@@ -19,7 +18,7 @@ namespace Radilovsoft.Rest.Infrastructure.Test
         {
             var gen = new Random();
             _orderHelper = new OrderHelper(new ExpressionHelper());
-            _queryable = Enumerable.Range(0, 10)
+            _queryable = Enumerable.Range(0, 100)
                 .Select(x => new TestDto {Id = Guid.NewGuid(), Name = $"name{x}", CreatedUtc = RandomDay(gen)})
                 .ToArray()
                 .AsQueryable();
@@ -49,24 +48,6 @@ namespace Radilovsoft.Rest.Infrastructure.Test
             var queryable2 = _queryable.OrderByDescending(x => x.Name).ThenBy(x => x.CreatedUtc).ToArray();
 
             Equally(queryable2, queryable1);
-        }
-
-        private static DateTime RandomDay(Random gen)
-        {
-            var start = new DateTime(1995, 1, 1);
-            var range = (DateTime.Today - start).Days;
-            return start.AddDays(gen.Next(range));
-        }
-
-        private static void Equally(IReadOnlyList<TestDto> queryable2, IReadOnlyList<TestDto> queryable1)
-        {
-            for (int i = 0; i < queryable2.Count; i++)
-            {
-                if (!Equals(queryable1[i], queryable2[i]))
-                {
-                    Assert.Fail();
-                }
-            }
         }
     }
 }
