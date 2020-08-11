@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Radilovsoft.Rest.Data.Core.Contract;
@@ -17,35 +18,42 @@ namespace Radilovsoft.Rest.Data.Core.Provider
                                ?? throw new ArgumentNullException(nameof(dataExceptionManager));
         }
 
-        public async Task<T> SafeExecuteAsync<T>(
+        public Task<T> SafeExecuteAsync<T>(
             Func<IDataProvider, CancellationToken, Task<T>> func,
             IDataProvider provider,
             IsolationLevel level = IsolationLevel.RepeatableRead,
             int retryCount = 3,
             CancellationToken token = default)
         {
-            var result = default(T);
-            await SafeExecuteAsync(Wrapper, provider, level, retryCount, token).ConfigureAwait(false);
-            return result;
-
-            async Task Wrapper(IDataProvider db, CancellationToken ct) =>
-                result = await func(db, ct).ConfigureAwait(false);
+            return SafeExecuteAsync(WrapperTaskT, func, provider, level, retryCount, token);
         }
 
-        public async Task SafeExecuteAsync(
+        public Task SafeExecuteAsync(
             Func<IDataProvider, CancellationToken, Task> func,
             IDataProvider provider,
             IsolationLevel level = IsolationLevel.RepeatableRead,
             int retryCount = 3,
             CancellationToken token = default)
         {
+            return SafeExecuteAsync(WrapperTask<VoidStruct>, func, provider, level, retryCount, token);
+        }
+
+        private async Task<T> SafeExecuteAsync<T, TArg>(
+            Func<IDataProvider, TArg, CancellationToken, Task<T>> func,
+            TArg arg,
+            IDataProvider provider,
+            IsolationLevel level = IsolationLevel.RepeatableRead,
+            int retryCount = 3,
+            CancellationToken token = default)
+        {
+            T result;
             var count = 0;
             while (true)
             {
                 try
                 {
                     await using var transaction = provider.Transaction(level);
-                    await func(provider, token).ConfigureAwait(false);
+                    result = await func(provider, arg, token).ConfigureAwait(false);
                     await transaction.CommitAsync(token).ConfigureAwait(false);
                     break;
                 }
@@ -58,10 +66,36 @@ namespace Radilovsoft.Rest.Data.Core.Provider
                     await Task.Delay(TimeSpan.FromSeconds(1), token).ConfigureAwait(false);
                 }
             }
-        }        
-        
+
+            return result;
+        }
+
         protected virtual void Reset()
         {
+        }
+
+        [StructLayout(LayoutKind.Auto)]
+        private readonly struct VoidStruct
+        {
+        }
+
+
+        private static async Task<T> WrapperTask<T>(
+            IDataProvider dp,
+            Func<IDataProvider, CancellationToken, Task> f,
+            CancellationToken t)
+        {
+            await f(dp, t);
+            return default;
+        }
+
+
+        private static Task<TW> WrapperTaskT<TW>(
+            IDataProvider dp,
+            Func<IDataProvider, CancellationToken, Task<TW>> f,
+            CancellationToken t)
+        {
+            return f(dp, t);
         }
     }
 }
