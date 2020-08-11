@@ -8,15 +8,12 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Copyright>Radilov Peter</Copyright>
     <DocumentationFile>Radilovsoft.Rest.Data.Linq2Db.xml</DocumentationFile>
-    <Version>1.0.2</Version>
+    <Version>1.0.3</Version>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="linq2db" Version="3.0.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Radilovsoft.Rest.Data.Core\Radilovsoft.Rest.Data.Core.csproj" />
+    <PackageReference Include="Radilovsoft.Rest.Data.Core" Version="1.0.3" />
   </ItemGroup>
 
 </Project>

@@ -7,12 +7,13 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Copyright>Radilov Peter</Copyright>
     <DocumentationFile>Radilovsoft.Rest.Core.xml</DocumentationFile>
-    <Version>1.0.2</Version>
+    <Version>1.0.3</Version>
+    <LangVersion>8</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="JetBrains.Annotations" Version="2020.1.0" />
-    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.0" Condition="'$(Configuration)'=='Debug'" />
   </ItemGroup>
 
 </Project>

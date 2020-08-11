@@ -7,16 +7,13 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Copyright>Radilov Peter</Copyright>
     <DocumentationFile>Radilovsoft.Rest.Infrastructure.xml</DocumentationFile>
-    <Version>1.0.2.5</Version>
+    <Version>1.0.3</Version>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="10.0.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Data\Radilovsoft.Rest.Data.Core\Radilovsoft.Rest.Data.Core.csproj" />
-    <ProjectReference Include="..\Radilovsoft.Rest.Core\Radilovsoft.Rest.Core.csproj" />
+    <PackageReference Include="Radilovsoft.Rest.Core" Version="1.0.3" />
+    <PackageReference Include="Radilovsoft.Rest.Data.Core" Version="1.0.3" />
   </ItemGroup>
 
 </Project>

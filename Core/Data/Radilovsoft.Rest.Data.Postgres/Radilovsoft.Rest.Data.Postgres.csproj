@@ -3,7 +3,7 @@
     <PropertyGroup>
         <TargetFramework>netcoreapp3.1</TargetFramework>
         <Nullable>enable</Nullable>
-        <Version>1.0.2</Version>
+        <Version>1.0.3</Version>
         <SignAssembly>true</SignAssembly>
         <AssemblyOriginatorKeyFile>REST ASP.NET.pfx</AssemblyOriginatorKeyFile>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -15,10 +15,7 @@
 
     <ItemGroup>
       <PackageReference Include="Npgsql" Version="4.1.4" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <ProjectReference Include="..\Radilovsoft.Rest.Data.Core\Radilovsoft.Rest.Data.Core.csproj" />
+      <PackageReference Include="Radilovsoft.Rest.Data.Core" Version="1.0.3" />
     </ItemGroup>
 
 </Project>
