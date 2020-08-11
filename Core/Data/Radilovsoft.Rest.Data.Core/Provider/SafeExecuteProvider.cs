@@ -79,7 +79,6 @@ namespace Radilovsoft.Rest.Data.Core.Provider
         {
         }
 
-
         private static async Task<T> WrapperTask<T>(
             IDataProvider dp,
             Func<IDataProvider, CancellationToken, Task> f,
@@ -89,10 +88,9 @@ namespace Radilovsoft.Rest.Data.Core.Provider
             return default;
         }
 
-
-        private static Task<TW> WrapperTaskT<TW>(
+        private static Task<T> WrapperTaskT<T>(
             IDataProvider dp,
-            Func<IDataProvider, CancellationToken, Task<TW>> f,
+            Func<IDataProvider, CancellationToken, Task<T>> f,
             CancellationToken t)
         {
             return f(dp, t);
