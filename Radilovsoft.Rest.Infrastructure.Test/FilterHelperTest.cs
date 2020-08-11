@@ -37,13 +37,13 @@ namespace Radilovsoft.Rest.Infrastructure.Test
             var filter = new Filter
             {
                 Field = nameof(TestDto.Order),
-                Value = 5,
+                Value = 50,
                 Operator = @operator
             };
             var expression = _filterHelper.ToExpression<TestDto>(filter);
 
             var q1 = _queryable.Where(expression).ToArray();
-            var q2 = _queryable.Where(x => x.Order == 5).ToArray();
+            var q2 = _queryable.Where(x => x.Order == 50).ToArray();
             Equally(q1, q2);
         }
 
@@ -55,13 +55,13 @@ namespace Radilovsoft.Rest.Infrastructure.Test
             var filter = new Filter
             {
                 Field = nameof(TestDto.Order),
-                Value = 5,
+                Value = 50,
                 Operator = @operator
             };
             var expression = _filterHelper.ToExpression<TestDto>(filter);
 
             var q1 = _queryable.Where(expression).ToArray();
-            var q2 = _queryable.Where(x => x.Order != 5).ToArray();
+            var q2 = _queryable.Where(x => x.Order != 50).ToArray();
             Equally(q1, q2);
         }
 
