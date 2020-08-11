@@ -45,10 +45,5 @@ namespace Radilovsoft.Rest.Data.Linq2Db.Provider
         {
             return new ValueTask(_transaction.DataConnection.RollbackTransactionAsync());
         }
-
-        public object GetTransaction()
-        {
-            return _transaction;
-        }
     }
 }

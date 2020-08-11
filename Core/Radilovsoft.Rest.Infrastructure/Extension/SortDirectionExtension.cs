@@ -8,5 +8,10 @@ namespace Radilovsoft.Rest.Infrastructure.Extension
         {
             return sortDirection ?? SortDirection.Asc;
         }
+
+        public static SortDirection GetOrDesc(this SortDirection? sortDirection)
+        {
+            return sortDirection ?? SortDirection.Desc;
+        }
     }
 }

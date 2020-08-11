@@ -2,7 +2,7 @@ using System;
 using System.Linq.Expressions;
 using Radilovsoft.Rest.Infrastructure.Dto;
 
-namespace Radilovsoft.Rest.Infrastructure.Contract
+namespace Radilovsoft.Rest.Infrastructure.Contract.Helper
 {
     public interface IFilterHelper
     {

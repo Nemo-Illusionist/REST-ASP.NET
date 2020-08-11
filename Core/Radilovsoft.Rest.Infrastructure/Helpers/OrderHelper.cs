@@ -4,9 +4,10 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using JetBrains.Annotations;
-using Radilovsoft.Rest.Infrastructure.Contract;
 using Radilovsoft.Rest.Infrastructure.Contract.Dto;
+using Radilovsoft.Rest.Infrastructure.Contract.Helper;
 using Radilovsoft.Rest.Infrastructure.Dto;
+using Radilovsoft.Rest.Infrastructure.Extension;
 
 namespace Radilovsoft.Rest.Infrastructure.Helpers
 {
@@ -62,7 +63,7 @@ namespace Radilovsoft.Rest.Infrastructure.Helpers
 
             foreach (var order in orders.Skip(1))
             {
-                var methodName = order.DirectionValue == SortDirection.Asc
+                var methodName = order.Direction.GetOrAsc() == SortDirection.Asc
                     ? nameof(Queryable.ThenBy)
                     : nameof(Queryable.ThenByDescending);
                 orderedQueryable = ApplyOrder(orderedQueryable, type, methodName, order.Field);
@@ -73,7 +74,7 @@ namespace Radilovsoft.Rest.Infrastructure.Helpers
 
         private IOrderedQueryable<T> ApplyFirstOrder<T>(IQueryable<T> queryable, Type typeOut, IOrder order)
         {
-            var methodName = order.DirectionValue == SortDirection.Asc
+            var methodName = order.Direction.GetOrAsc() == SortDirection.Asc
                 ? nameof(Queryable.OrderBy)
                 : nameof(Queryable.OrderByDescending);
 

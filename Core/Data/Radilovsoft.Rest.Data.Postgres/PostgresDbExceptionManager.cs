@@ -19,13 +19,13 @@ namespace Radilovsoft.Rest.Data.Postgres
                 switch (ex.SqlState)
                 {
                     case PostgresErrorCodes.ForeignKeyViolation:
-                        throw new ForeignKeyViolationException(message, ex);
+                        return new ForeignKeyViolationException(message, ex);
                     case PostgresErrorCodes.UniqueViolation:
-                        throw new ObjectAlreadyExistsException(message, ex);
+                        return new ObjectAlreadyExistsException(message, ex);
                     case PostgresErrorCodes.SerializationFailure:
-                        throw new ConcurrentModifyException(message, ex);
+                        return new ConcurrentModifyException(message, ex);
                     default:
-                        throw ex;
+                        return ex;
                 }
             }
 

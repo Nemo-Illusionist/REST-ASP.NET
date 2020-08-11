@@ -11,9 +11,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AutoMapper" Version="9.0.0" />
-    <PackageReference Include="Radilovsoft.Rest.Core" Version="1.0.2" />
-    <PackageReference Include="Radilovsoft.Rest.Data.Core" Version="1.0.2" />
+    <PackageReference Include="AutoMapper" Version="10.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Data\Radilovsoft.Rest.Data.Core\Radilovsoft.Rest.Data.Core.csproj" />
+    <ProjectReference Include="..\Radilovsoft.Rest.Core\Radilovsoft.Rest.Core.csproj" />
   </ItemGroup>
 
 </Project>

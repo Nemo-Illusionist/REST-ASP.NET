@@ -14,8 +14,10 @@
 
     <ItemGroup>
       <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="3.1.4" />
-      <PackageReference Include="Radilovsoft.Rest.Data.Ef" Version="1.0.2" />
-      <PackageReference Include="Radilovsoft.Rest.Data.Postgres" Version="1.0.2" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Radilovsoft.Rest.Data.Ef\Radilovsoft.Rest.Data.Ef.csproj" />
     </ItemGroup>
 
 </Project>

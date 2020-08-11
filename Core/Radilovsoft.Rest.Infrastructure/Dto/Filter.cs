@@ -1,5 +1,4 @@
 using JetBrains.Annotations;
-using Radilovsoft.Rest.Data.Core.Contract.Entity;
 
 namespace Radilovsoft.Rest.Infrastructure.Dto
 {

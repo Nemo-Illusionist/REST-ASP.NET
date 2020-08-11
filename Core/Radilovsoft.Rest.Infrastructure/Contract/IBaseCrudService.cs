@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Radilovsoft.Rest.Data.Core.Contract.Entity;
     
@@ -20,8 +21,8 @@ namespace Radilovsoft.Rest.Infrastructure.Contract
         where TFullDto : class
         where TRequest : class
     {
-        Task<TKey> Post(TRequest request);
-        Task<TKey> Put(TKey id, TRequest request);
-        Task Delete(TKey id);
+        Task<TKey> PostAsync(TRequest request, CancellationToken token = default);
+        Task<TKey> PutAsync(TKey id, TRequest request, CancellationToken token = default);
+        Task DeleteAsync(TKey id, CancellationToken token = default);
     }
 }

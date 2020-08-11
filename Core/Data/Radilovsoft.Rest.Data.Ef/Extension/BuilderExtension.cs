@@ -31,7 +31,7 @@ namespace Radilovsoft.Rest.Data.Ef.Extension
         {
             if (builder == null) throw new ArgumentNullException(nameof(builder));
             if (modelStore == null) throw new ArgumentNullException(nameof(modelStore));
-            if (indexProvider == null) indexProvider = new DefaultIndexProvider();
+            indexProvider ??= new DefaultIndexProvider();
 
             foreach (var type in modelStore.GetModels())
             {
@@ -57,7 +57,7 @@ namespace Radilovsoft.Rest.Data.Ef.Extension
 
                     if (!string.IsNullOrEmpty(attribute.Method))
                     {
-                        indexBuilder = indexProvider.HasMethod(indexBuilder, attribute.Method);
+                        indexProvider.HasMethod(indexBuilder, attribute.Method);
                     }
                 }
             }

@@ -6,6 +6,6 @@ namespace Radilovsoft.Rest.Infrastructure.Contract.Dto
     {
         public string Field { get; }
 
-        public SortDirection DirectionValue { get; }
+        public SortDirection? Direction { get; }
     }
 }

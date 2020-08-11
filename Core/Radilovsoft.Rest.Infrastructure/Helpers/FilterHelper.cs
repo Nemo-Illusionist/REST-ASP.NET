@@ -2,7 +2,7 @@ using System;
 using System.Globalization;
 using System.Linq.Expressions;
 using JetBrains.Annotations;
-using Radilovsoft.Rest.Infrastructure.Contract;
+using Radilovsoft.Rest.Infrastructure.Contract.Helper;
 using Radilovsoft.Rest.Infrastructure.Dto;
 using Radilovsoft.Rest.Infrastructure.Extension;
 

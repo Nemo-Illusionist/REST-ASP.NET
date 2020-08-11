@@ -3,9 +3,8 @@ using System.Linq;
 using NUnit.Framework;
 using Radilovsoft.Rest.Infrastructure.Dto;
 using Radilovsoft.Rest.Infrastructure.Helpers;
-using Radilovsoft.Rest.Infrastructure.Test.Helpers;
 
-namespace Radilovsoft.Rest.Infrastructure.Test
+namespace Radilovsoft.Rest.Infrastructure.Test.Helpers
 {
     public class FilterHelperTest : BaseHelperTest
     {

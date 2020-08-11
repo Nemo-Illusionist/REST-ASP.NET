@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Reflection;
 using JetBrains.Annotations;
@@ -17,7 +18,7 @@ namespace Radilovsoft.Rest.Data.Ef.Provider
             if (assembly == null) throw new ArgumentNullException(nameof(assembly));
 
             _modelTypes = assembly.GetExportedTypes()
-                .Where(x => !x.IsInterface && typeof(IEntity).IsAssignableFrom(x))
+                .Where(x => !x.IsInterface && x.GetCustomAttribute<TableAttribute>() != null)
                 .ToArray();
         }
 

@@ -7,33 +7,14 @@ using Radilovsoft.Rest.Data.Core.Contract.Provider;
 
 namespace Radilovsoft.Rest.Data.Core.Provider
 {
-    public abstract class BaseSafeExecuteProvider : ISafeExecuteProvider
+    public class SafeExecuteProvider : ISafeExecuteProvider
     {
         protected IDataExceptionManager ExceptionManager { get; }
 
-        protected BaseSafeExecuteProvider(IDataExceptionManager dataExceptionManager)
+        protected SafeExecuteProvider(IDataExceptionManager dataExceptionManager)
         {
             ExceptionManager = dataExceptionManager
                                ?? throw new ArgumentNullException(nameof(dataExceptionManager));
-        }
-
-        public Task<T> SafeExecuteAsync<T>(
-            Func<IDataProvider, CancellationToken, Task<T>> func,
-            IsolationLevel level = IsolationLevel.RepeatableRead,
-            int retryCount = 3,
-            CancellationToken token = default)
-        {
-            return SafeExecuteAsync(func, GetProvider(), level, retryCount, token);
-        }
-
-
-        public Task SafeExecuteAsync(
-            Func<IDataProvider, CancellationToken, Task> func,
-            IsolationLevel level = IsolationLevel.RepeatableRead,
-            int retryCount = 3,
-            CancellationToken token = default)
-        {
-            return SafeExecuteAsync(func, GetProvider(), level, retryCount, token);
         }
 
         public async Task<T> SafeExecuteAsync<T>(
@@ -77,9 +58,10 @@ namespace Radilovsoft.Rest.Data.Core.Provider
                     await Task.Delay(TimeSpan.FromSeconds(1), token).ConfigureAwait(false);
                 }
             }
+        }        
+        
+        protected virtual void Reset()
+        {
         }
-
-        protected abstract void Reset();
-        protected abstract IDataProvider GetProvider();
     }
 }

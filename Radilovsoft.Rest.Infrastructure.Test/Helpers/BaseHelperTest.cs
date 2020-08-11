@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
 using NUnit.Framework;
-using Radilovsoft.Rest.Infrastructure.Test.Helpers;
 
-namespace Radilovsoft.Rest.Infrastructure.Test
+namespace Radilovsoft.Rest.Infrastructure.Test.Helpers
 {
     public abstract class BaseHelperTest
     {

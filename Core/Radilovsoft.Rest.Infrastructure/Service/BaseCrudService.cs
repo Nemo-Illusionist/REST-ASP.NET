@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using JetBrains.Annotations;
@@ -7,6 +8,7 @@ using Radilovsoft.Rest.Data.Core.Contract;
 using Radilovsoft.Rest.Data.Core.Contract.Entity;
 using Radilovsoft.Rest.Data.Core.Contract.Provider;
 using Radilovsoft.Rest.Infrastructure.Contract;
+using Radilovsoft.Rest.Infrastructure.Contract.Helper;
 
 namespace Radilovsoft.Rest.Infrastructure.Service
 {
@@ -29,22 +31,22 @@ namespace Radilovsoft.Rest.Infrastructure.Service
             DataProvider = dataProvider ?? throw new ArgumentNullException(nameof(dataProvider));
         }
 
-        public virtual async Task<TKey> Post(TRequest request)
+        public virtual async Task<TKey> PostAsync(TRequest request, CancellationToken token = default)
         {
             var db = Mapper.Map<TDb>(request);
-            await DataProvider.InsertAsync(db).ConfigureAwait(false);
+            await DataProvider.InsertAsync(db, token).ConfigureAwait(false);
             return db.Id;
         }
 
-        public virtual async Task<TKey> Put(TKey id, TRequest request)
+        public virtual async Task<TKey> PutAsync(TKey id, TRequest request, CancellationToken token = default)
         {
-            var db = await GetDbById(id).ConfigureAwait(false);
+            var db = await GetDbById(id, token).ConfigureAwait(false);
             db = Mapper.Map(request, db);
-            await DataProvider.UpdateAsync(db).ConfigureAwait(false);
+            await DataProvider.UpdateAsync(db, token).ConfigureAwait(false);
             return db.Id;
         }
 
-        public virtual Task Delete(TKey id)
+        public virtual Task DeleteAsync(TKey id, CancellationToken token = default)
         {
             if (typeof(TDb).IsAssignableFrom(typeof(IDeletable)))
             {
@@ -53,20 +55,20 @@ namespace Radilovsoft.Rest.Infrastructure.Service
                 if (methodInfo == null) throw new InvalidOperationException();
 
                 //todo: Проверить!
-                var setDeleteDelegate = (Func<TKey, Task>) methodInfo
+                var setDeleteDelegate = (Func<TKey, CancellationToken, Task>) methodInfo
                     .MakeGenericMethod(typeof(TDb), typeof(TKey))
-                    .CreateDelegate(typeof(Func<TKey, Task>));
-                return setDeleteDelegate(id);
+                    .CreateDelegate(typeof(Func<TKey, CancellationToken, Task>));
+                return setDeleteDelegate(id, token);
             }
             else
             {
-                return DataProvider.DeleteByIdAsync<TDb, TKey>(id);
+                return DataProvider.DeleteByIdAsync<TDb, TKey>(id, token);
             }
         }
 
-        private Task<TDb> GetDbById(TKey id)
+        private Task<TDb> GetDbById(TKey id, CancellationToken token = default)
         {
-            return AsyncHelpers.SingleAsync(RoDataProvider.GetQueryable<TDb>().Where(x => x.Id.Equals(id)));
+            return AsyncHelpers.SingleAsync(RoDataProvider.GetQueryable<TDb>().Where(x => x.Id.Equals(id)), token);
         }
     }
 }

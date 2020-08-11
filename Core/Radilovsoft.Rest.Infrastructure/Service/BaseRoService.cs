@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using JetBrains.Annotations;
@@ -10,6 +11,7 @@ using Radilovsoft.Rest.Data.Core.Contract.Entity;
 using Radilovsoft.Rest.Data.Core.Contract.Provider;
 using Radilovsoft.Rest.Infrastructure.Contract;
 using Radilovsoft.Rest.Infrastructure.Contract.Dto;
+using Radilovsoft.Rest.Infrastructure.Contract.Helper;
 using Radilovsoft.Rest.Infrastructure.Dto;
 using Radilovsoft.Rest.Infrastructure.Extension;
 
@@ -37,19 +39,21 @@ namespace Radilovsoft.Rest.Infrastructure.Service
             AsyncHelpers = asyncHelpers ?? throw new ArgumentNullException(nameof(asyncHelpers));
         }
 
-        public virtual async Task<TFullDto> GetById(TKey id)
+        public virtual async Task<TFullDto> GetByIdAsync(TKey id, CancellationToken token = default)
         {
             var queryable = RoDataProvider.GetQueryable<TDb>().Where(x => x.Id.Equals(id))
                 .ProjectTo<TFullDto>(Mapper);
-            var result = await AsyncHelpers.SingleOrDefaultAsync(queryable).ConfigureAwait(false);
+            var result = await AsyncHelpers.SingleOrDefaultAsync(queryable, token).ConfigureAwait(false);
 
             if (result == null) throw new ItemNotFoundException();
             return result;
         }
 
-        public virtual async Task<PagedResult<TDto>> GetByFilter([NotNull] IPageFilter pageFilter,
+        public virtual async Task<PagedResult<TDto>> GetByFilterAsync(
+            [NotNull] IPageFilter pageFilter,
             Expression<Func<TDto, bool>> filter = null,
-            IOrder[] orders = null)
+            IOrder[] orders = null,
+            CancellationToken token = default)
         {
             if (pageFilter == null) throw new ArgumentNullException(nameof(pageFilter));
 
@@ -58,12 +62,12 @@ namespace Radilovsoft.Rest.Infrastructure.Service
 
             return new PagedResult<TDto>
             {
-                Data = await AsyncHelpers.ToArrayAsync(queryable).ConfigureAwait(false),
+                Data = await AsyncHelpers.ToArrayAsync(queryable, token).ConfigureAwait(false),
                 Meta = new Meta
                 {
                     Page = pageFilter.Page,
                     PageSize = pageFilter.PageSize,
-                    Count = await AsyncHelpers.LongCountAsync(queryableForCount).ConfigureAwait(false)
+                    Count = await AsyncHelpers.LongCountAsync(queryableForCount, token).ConfigureAwait(false)
                 }
             };
         }

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using JetBrains.Annotations;
 using Radilovsoft.Rest.Core.Extension;
-using Radilovsoft.Rest.Infrastructure.Contract;
+using Radilovsoft.Rest.Infrastructure.Contract.Helper;
 
 namespace Radilovsoft.Rest.Infrastructure.Helpers
 {

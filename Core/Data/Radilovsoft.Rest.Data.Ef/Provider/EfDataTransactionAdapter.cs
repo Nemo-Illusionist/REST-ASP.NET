@@ -45,10 +45,5 @@ namespace Radilovsoft.Rest.Data.Ef.Provider
         {
             return _transaction.DisposeAsync();
         }
-
-        public object GetTransaction()
-        {
-            return _transaction;
-        }
     }
 }

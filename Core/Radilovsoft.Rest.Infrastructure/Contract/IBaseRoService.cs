@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
+using System.Threading;
 using System.Threading.Tasks;
 using Radilovsoft.Rest.Data.Core.Contract.Entity;
 using Radilovsoft.Rest.Infrastructure.Contract.Dto;
@@ -22,9 +23,12 @@ namespace Radilovsoft.Rest.Infrastructure.Contract
         where TDto : class
         where TFullDto : class
     {
-        Task<TFullDto> GetById(TKey id);
+        Task<TFullDto> GetByIdAsync(TKey id, CancellationToken token = default);
 
-        Task<PagedResult<TDto>> GetByFilter(IPageFilter pageFilter, Expression<Func<TDto, bool>> filter = null,
-            IOrder[] orders = null);
+        Task<PagedResult<TDto>> GetByFilterAsync(
+            IPageFilter pageFilter,
+            Expression<Func<TDto, bool>> filter = null,
+            IOrder[] orders = null,
+            CancellationToken token = default);
     }
 }

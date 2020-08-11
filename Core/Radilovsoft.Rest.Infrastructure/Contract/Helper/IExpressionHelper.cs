@@ -1,7 +1,7 @@
 using System;
 using System.Linq.Expressions;
 
-namespace Radilovsoft.Rest.Infrastructure.Contract
+namespace Radilovsoft.Rest.Infrastructure.Contract.Helper
 {
     public interface IExpressionHelper
     {

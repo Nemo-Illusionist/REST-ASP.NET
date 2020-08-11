@@ -2,7 +2,7 @@ namespace Radilovsoft.Rest.Data.Core.Exceptions
 {
     public class ForeignKeyViolationException : System.Exception
     {
-        public ForeignKeyViolationException(string message, System.Exception innerException) : base(message, innerException)
+        public ForeignKeyViolationException()
         {
         }
 
@@ -10,7 +10,7 @@ namespace Radilovsoft.Rest.Data.Core.Exceptions
         {
         }
 
-        public ForeignKeyViolationException()
+        public ForeignKeyViolationException(string message, System.Exception innerException) : base(message, innerException)
         {
         }
     }
