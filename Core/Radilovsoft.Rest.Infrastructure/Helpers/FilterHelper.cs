@@ -1,6 +1,9 @@
 using System;
+using System.Collections;
 using System.Globalization;
+using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using JetBrains.Annotations;
 using Radilovsoft.Rest.Infrastructure.Contract.Helper;
 using Radilovsoft.Rest.Infrastructure.Dto;
@@ -10,6 +13,14 @@ namespace Radilovsoft.Rest.Infrastructure.Helpers
 {
     public class FilterHelper : IFilterHelper
     {
+        private static readonly MethodInfo InMethod;
+        
+        static FilterHelper()
+        {
+            InMethod = typeof(Enumerable).GetMethods()
+                .Single(x => x.Name == nameof(Enumerable.Contains) && x.GetParameters().Length == 2);
+        }
+        
         private readonly IExpressionHelper _expressionHelper;
 
         public FilterHelper([NotNull] IExpressionHelper expressionHelper)
@@ -79,12 +90,14 @@ namespace Radilovsoft.Rest.Infrastructure.Helpers
                     return Expression.GreaterThan(prop, constant);
                 case OperatorType.GreaterOrEqual:
                     return Expression.GreaterThanOrEqual(prop, constant);
+                case OperatorType.In:
+                    return Expression.Call(null, InMethod.MakeGenericMethod(prop.Type), constant, prop);;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(filter));
             }
         }
 
-        private OperatorType ParsValue(string operatorValue)
+        protected virtual OperatorType ParsValue(string operatorValue)
         {
             if (string.IsNullOrEmpty(operatorValue))
             {
@@ -113,6 +126,8 @@ namespace Radilovsoft.Rest.Infrastructure.Helpers
                 case ">=":
                 case "greaterorequal":
                     return OperatorType.GreaterOrEqual;
+                case "in":
+                    return OperatorType.In;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(operatorValue));
             }
@@ -126,9 +141,14 @@ namespace Radilovsoft.Rest.Infrastructure.Helpers
             var value = filter.Value;
             var propertyType = type.GetProperty(field)?.PropertyType ?? typeof(object);
 
+            if (value?.GetType().GetInterface(nameof(IEnumerable)) != null)
+            {
+                propertyType = propertyType.MakeArrayType();
+            }
+
             if (propertyType == typeof(Guid))
             {
-                value = Guid.Parse(value.ToString());
+                value = Guid.Parse(value?.ToString()!);
             }
             else if (propertyType == typeof(Guid?))
             {
@@ -138,7 +158,9 @@ namespace Radilovsoft.Rest.Infrastructure.Helpers
             return Expression.Constant(value, propertyType);
         }
 
-        protected virtual Expression GetRestrictionExpression(string operatorValue, Expression propertyExpression,
+        protected virtual Expression GetRestrictionExpression(
+            string operatorValue, 
+            Expression propertyExpression,
             ConstantExpression constantExpression)
         {
             return null;

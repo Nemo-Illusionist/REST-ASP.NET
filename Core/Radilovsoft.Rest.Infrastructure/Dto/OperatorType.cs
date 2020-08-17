@@ -11,5 +11,6 @@ namespace Radilovsoft.Rest.Infrastructure.Dto
         LessOrEqual,
         Greater,
         GreaterOrEqual,
+        In,
     }
 }

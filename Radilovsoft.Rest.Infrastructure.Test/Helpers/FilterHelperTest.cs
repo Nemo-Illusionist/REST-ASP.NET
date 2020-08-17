@@ -131,5 +131,23 @@ namespace Radilovsoft.Rest.Infrastructure.Test.Helpers
             var q2 = _queryable.Where(x => x.Order >= 50).ToArray();
             Equally(q1, q2);
         }
+
+        [TestCase("in")]
+        public void InTest(string @operator)
+        {
+            var filter = new Filter
+            {
+                Field = nameof(TestDto.Order),
+                Value = new[] {20, 50, 60},
+                Operator = @operator
+            };
+            var expression = _filterHelper.ToExpression<TestDto>(filter);
+
+            var q1 = _queryable.Where(expression).ToArray();
+            var q2 = _queryable.Where(x => x.Order == 20 || x.Order == 50 || x.Order == 60).ToArray();
+            var q3 = _queryable.Where(x => new[] {20, 50, 60}.Contains(x.Order)).ToArray();
+            Equally(q1, q2);
+            Equally(q1, q3);
+        }
     }
 }
