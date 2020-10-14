@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
-using JetBrains.Annotations;
 using Radilovsoft.Rest.Data.Core.Contract;
 using Radilovsoft.Rest.Data.Core.Contract.Entity;
 using Radilovsoft.Rest.Data.Core.Contract.Provider;
@@ -22,10 +21,11 @@ namespace Radilovsoft.Rest.Infrastructure.Service
     {
         protected IDataProvider DataProvider { get; }
 
-        public BaseCrudService([NotNull] IDataProvider dataProvider,
-            [NotNull] IAsyncHelpers asyncHelpers,
-            [NotNull] IOrderHelper orderHelper,
-            [NotNull] IMapper mapper)
+        public BaseCrudService( 
+            IDataProvider dataProvider,
+             IAsyncHelpers asyncHelpers,
+             IOrderHelper orderHelper,
+             IMapper mapper)
             : base(dataProvider, asyncHelpers, orderHelper, mapper)
         {
             DataProvider = dataProvider ?? throw new ArgumentNullException(nameof(dataProvider));

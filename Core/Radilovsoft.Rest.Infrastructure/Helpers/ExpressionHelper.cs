@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using JetBrains.Annotations;
 using Radilovsoft.Rest.Core.Extension;
 using Radilovsoft.Rest.Infrastructure.Contract.Helper;
 
@@ -10,8 +9,7 @@ namespace Radilovsoft.Rest.Infrastructure.Helpers
 {
     public class ExpressionHelper : IExpressionHelper
     {
-        public Expression ParsFieldToExpression([NotNull] string field, [NotNull] Type type,
-            [NotNull] ParameterExpression param)
+        public Expression ParsFieldToExpression(string field, Type type, ParameterExpression param)
         {
             if (type == null) throw new ArgumentNullException(nameof(type));
             if (param == null) throw new ArgumentNullException(nameof(param));

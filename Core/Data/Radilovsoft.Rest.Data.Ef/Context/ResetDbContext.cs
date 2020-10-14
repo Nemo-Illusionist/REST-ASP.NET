@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 
@@ -28,6 +29,12 @@ namespace Radilovsoft.Rest.Data.Ef.Context
                     case EntityState.Deleted:
                         entry.Reload();
                         break;
+                    case EntityState.Detached:
+                        break;
+                    case EntityState.Unchanged:
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
                 }
             }
         }

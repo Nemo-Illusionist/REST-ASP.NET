@@ -1,8 +1,5 @@
-using JetBrains.Annotations;
-
 namespace Radilovsoft.Rest.Infrastructure.Dto
 {
-    [PublicAPI]
     public class Meta
     {
         public int Page { get; set; }

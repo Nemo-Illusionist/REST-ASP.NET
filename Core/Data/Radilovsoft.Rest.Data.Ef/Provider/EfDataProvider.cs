@@ -4,7 +4,6 @@ using System.Data;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore;
 using Radilovsoft.Rest.Data.Core.Contract;
 using Radilovsoft.Rest.Data.Core.Contract.Entity;
@@ -13,16 +12,14 @@ using Radilovsoft.Rest.Data.Ef.Context;
 
 namespace Radilovsoft.Rest.Data.Ef.Provider
 {
-    [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
     public class EfDataProvider : IDataProvider
     {
         private readonly ResetDbContext _dbContext;
-        [NotNull]
         private readonly IDataExceptionManager _exceptionManager;
-        
+
         public EfDataProvider(
-            [NotNull] ResetDbContext connection,
-            [NotNull] IDataExceptionManager dataExceptionManager)
+            ResetDbContext connection,
+            IDataExceptionManager dataExceptionManager)
         {
             _dbContext = connection ?? throw new ArgumentNullException(nameof(connection));
             _exceptionManager = dataExceptionManager ?? throw new ArgumentNullException(nameof(dataExceptionManager));
@@ -47,36 +44,36 @@ namespace Radilovsoft.Rest.Data.Ef.Provider
 
         #region Modify
 
-        public Task<T> InsertAsync<T>(T entity, CancellationToken token = default) where T : class
+        public Task<T> InsertAsync<T>(T entity, CancellationToken cancellationToken = default) where T : class
         {
             return ExecuteCommand(async state =>
             {
                 Add(state.entity);
                 await _dbContext.SaveChangesAsync(state.token).ConfigureAwait(false);
                 return state.entity;
-            }, (entity, token));
+            }, (entity, token: cancellationToken));
         }
 
-        public Task<T> UpdateAsync<T>(T entity, CancellationToken token = default) where T : class
+        public Task<T> UpdateAsync<T>(T entity, CancellationToken cancellationToken = default) where T : class
         {
             return ExecuteCommand(async state =>
             {
                 UpdateEntity(state.entity);
                 await _dbContext.SaveChangesAsync(state.token).ConfigureAwait(false);
                 return state.entity;
-            }, (entity, token));
+            }, (entity, token: cancellationToken));
         }
 
-        public Task DeleteAsync<T>(T entity, CancellationToken token = default) where T : class
+        public Task DeleteAsync<T>(T entity, CancellationToken cancellationToken = default) where T : class
         {
             return ExecuteCommand(state =>
             {
                 _dbContext.Set<T>().Remove(state.entity);
                 return _dbContext.SaveChangesAsync(state.token);
-            }, (entity, token));
+            }, (entity, token: cancellationToken));
         }
 
-        public Task DeleteByIdAsync<T, TKey>(TKey id, CancellationToken token = default)
+        public Task DeleteByIdAsync<T, TKey>(TKey id, CancellationToken cancellationToken = default)
             where T : class, IEntity<TKey> where TKey : IComparable
         {
             return ExecuteCommand(async state =>
@@ -85,10 +82,10 @@ namespace Radilovsoft.Rest.Data.Ef.Provider
                     .ConfigureAwait(false);
                 _dbContext.Set<T>().Remove(entity);
                 return await _dbContext.SaveChangesAsync(state.token).ConfigureAwait(false);
-            }, (id, token));
+            }, (id, token: cancellationToken));
         }
 
-        public Task SetDeleteAsync<T, TKey>(TKey id, CancellationToken token = default)
+        public Task SetDeleteAsync<T, TKey>(TKey id, CancellationToken cancellationToken = default)
             where T : class, IDeletable, IEntity<TKey>
             where TKey : IComparable
         {
@@ -99,10 +96,10 @@ namespace Radilovsoft.Rest.Data.Ef.Provider
                 entity.DeletedUtc = DateTime.UtcNow;
                 UpdateEntity(entity);
                 return await _dbContext.SaveChangesAsync(state.token).ConfigureAwait(false);
-            }, (id, token));
+            }, (id, token: cancellationToken));
         }
 
-        public Task SetUnDeleteAsync<T, TKey>(TKey id, CancellationToken token = default)
+        public Task SetUnDeleteAsync<T, TKey>(TKey id, CancellationToken cancellationToken = default)
             where T : class, IDeletable, IEntity<TKey>
             where TKey : IComparable
         {
@@ -113,14 +110,14 @@ namespace Radilovsoft.Rest.Data.Ef.Provider
                 entity.DeletedUtc = null;
                 UpdateEntity(entity);
                 return await _dbContext.SaveChangesAsync(state.token).ConfigureAwait(false);
-            }, (id, token));
+            }, (id, token: cancellationToken));
         }
 
         #endregion
 
         #region BatchModify
 
-        public Task BatchInsertAsync<T>(IEnumerable<T> entities, CancellationToken token = default)
+        public Task BatchInsertAsync<T>(IEnumerable<T> entities, CancellationToken cancellationToken = default)
             where T : class
         {
             return ExecuteCommand(state =>
@@ -131,10 +128,10 @@ namespace Radilovsoft.Rest.Data.Ef.Provider
                 }
 
                 return _dbContext.SaveChangesAsync(state.token);
-            }, (entities, token));
+            }, (entities, token: cancellationToken));
         }
 
-        public Task BatchUpdateAsync<T>(IEnumerable<T> entities, CancellationToken token = default)
+        public Task BatchUpdateAsync<T>(IEnumerable<T> entities, CancellationToken cancellationToken = default)
             where T : class
         {
             return ExecuteCommand(state =>
@@ -145,20 +142,20 @@ namespace Radilovsoft.Rest.Data.Ef.Provider
                 }
 
                 return _dbContext.SaveChangesAsync(state.token);
-            }, (entities, token));
+            }, (entities, token: cancellationToken));
         }
 
-        public Task BatchDeleteAsync<T>(IEnumerable<T> entities, CancellationToken token = default)
+        public Task BatchDeleteAsync<T>(IEnumerable<T> entities, CancellationToken cancellationToken = default)
             where T : class
         {
             return ExecuteCommand(state =>
             {
                 _dbContext.Set<T>().RemoveRange(state.entities);
                 return _dbContext.SaveChangesAsync(state.token);
-            }, (entities, token));
+            }, (entities, token: cancellationToken));
         }
 
-        public Task BatchDeleteByIdsAsync<T, TKey>(IEnumerable<TKey> ids, CancellationToken token = default)
+        public Task BatchDeleteByIdsAsync<T, TKey>(IEnumerable<TKey> ids, CancellationToken cancellationToken = default)
             where T : class, IEntity<TKey>
             where TKey : IComparable
         {
@@ -168,10 +165,10 @@ namespace Radilovsoft.Rest.Data.Ef.Provider
                     .ConfigureAwait(false);
                 _dbContext.Set<T>().RemoveRange(entity);
                 return await _dbContext.SaveChangesAsync(state.token).ConfigureAwait(false);
-            }, (ids, token));
+            }, (ids, token: cancellationToken));
         }
 
-        public Task BatchSetDeleteAsync<T, TKey>(IEnumerable<TKey> ids, CancellationToken token = default)
+        public Task BatchSetDeleteAsync<T, TKey>(IEnumerable<TKey> ids, CancellationToken cancellationToken = default)
             where T : class, IDeletable, IEntity<TKey> where TKey : IComparable
         {
             return ExecuteCommand(async state =>
@@ -186,10 +183,10 @@ namespace Radilovsoft.Rest.Data.Ef.Provider
                 }
 
                 return await _dbContext.SaveChangesAsync(state.token).ConfigureAwait(false);
-            }, (ids, token));
+            }, (ids, token: cancellationToken));
         }
 
-        public Task BatchSetUnDeleteAsync<T, TKey>(IEnumerable<TKey> ids, CancellationToken token = default)
+        public Task BatchSetUnDeleteAsync<T, TKey>(IEnumerable<TKey> ids, CancellationToken cancellationToken = default)
             where T : class, IDeletable, IEntity<TKey> where TKey : IComparable
         {
             return ExecuteCommand(async state =>
@@ -204,7 +201,7 @@ namespace Radilovsoft.Rest.Data.Ef.Provider
                 }
 
                 return await _dbContext.SaveChangesAsync(state.token).ConfigureAwait(false);
-            }, (ids, token));
+            }, (ids, token: cancellationToken));
         }
 
         #endregion
@@ -235,11 +232,11 @@ namespace Radilovsoft.Rest.Data.Ef.Provider
             entityEntry.State = EntityState.Modified;
         }
 
-        private async Task<T> ExecuteCommand<T, TState>(Func<TState, Task<T>> func, TState state)
+        private Task<T> ExecuteCommand<T, TState>(Func<TState, Task<T>> func, TState state)
         {
             try
             {
-                return await func(state).ConfigureAwait(false);
+                return func(state);
             }
             catch (Exception exception)
             {

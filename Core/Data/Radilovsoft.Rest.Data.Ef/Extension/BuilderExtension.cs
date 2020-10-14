@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore;
 using Radilovsoft.Rest.Data.Ef.Annotation;
 using Radilovsoft.Rest.Data.Ef.Contract;
@@ -13,7 +12,7 @@ namespace Radilovsoft.Rest.Data.Ef.Extension
 {
     public static class BuilderExtension
     {
-        public static ModelBuilder BuildEntity([NotNull] this ModelBuilder builder, [NotNull] IModelStore modelStore)
+        public static ModelBuilder BuildEntity(this ModelBuilder builder, IModelStore modelStore)
         {
             if (builder == null) throw new ArgumentNullException(nameof(builder));
             if (modelStore == null) throw new ArgumentNullException(nameof(modelStore));
@@ -26,7 +25,9 @@ namespace Radilovsoft.Rest.Data.Ef.Extension
             return builder;
         }
 
-        public static ModelBuilder BuildIndex([NotNull] this ModelBuilder builder, [NotNull] IModelStore modelStore,
+        public static ModelBuilder BuildIndex(
+            this ModelBuilder builder,
+            IModelStore modelStore,
             IIndexProvider indexProvider = null)
         {
             if (builder == null) throw new ArgumentNullException(nameof(builder));
@@ -44,7 +45,7 @@ namespace Radilovsoft.Rest.Data.Ef.Extension
                         p.Property.Name,
                         p.Attribute
                     })
-                    .GroupBy(p => p.IndexName, new NullUniqueEqualityComparer<string>());
+                    .GroupBy(p => p.IndexName, NullUniqueEqualityComparer<string>.Instance);
 
                 foreach (var index in indices)
                 {
@@ -65,8 +66,7 @@ namespace Radilovsoft.Rest.Data.Ef.Extension
             return builder;
         }
 
-        public static ModelBuilder BuildAutoIncrement([NotNull] this ModelBuilder builder,
-            [NotNull] IModelStore modelStore)
+        public static ModelBuilder BuildAutoIncrement(this ModelBuilder builder, IModelStore modelStore)
         {
             if (builder == null) throw new ArgumentNullException(nameof(builder));
             if (modelStore == null) throw new ArgumentNullException(nameof(modelStore));
@@ -76,15 +76,27 @@ namespace Radilovsoft.Rest.Data.Ef.Extension
                 var properties = GetPropAttribute<AutoIncrementAttribute>(type);
                 foreach (var property in properties)
                 {
-                    builder.Entity(type).Property(property.Property.Name).ValueGeneratedOnAdd();
+                    switch (property.Attribute.Type)
+                    {
+                        case AutoIncrementType.Add:
+                            builder.Entity(type).Property(property.Property.Name).ValueGeneratedOnAdd();
+                            break;
+                        case AutoIncrementType.Update:
+                            builder.Entity(type).Property(property.Property.Name).ValueGeneratedOnUpdate();
+                            break;
+                        case AutoIncrementType.AddOrUpdate:
+                            builder.Entity(type).Property(property.Property.Name).ValueGeneratedOnAddOrUpdate();
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
                 }
             }
 
             return builder;
         }
 
-        public static ModelBuilder BuildMultiKey([NotNull] this ModelBuilder builder,
-            [NotNull] IModelStore modelStore)
+        public static ModelBuilder BuildMultiKey(this ModelBuilder builder, IModelStore modelStore)
         {
             if (builder == null) throw new ArgumentNullException(nameof(builder));
             if (modelStore == null) throw new ArgumentNullException(nameof(modelStore));
@@ -106,7 +118,7 @@ namespace Radilovsoft.Rest.Data.Ef.Extension
         {
             return type.GetProperties()
                 .Select(p => (Property: p, Attribute: p.GetCustomAttribute<T>(true)))
-                .Where(x => x.Item2 != null);
+                .Where(p => p.Property != null && p.Attribute != null);
         }
     }
 }

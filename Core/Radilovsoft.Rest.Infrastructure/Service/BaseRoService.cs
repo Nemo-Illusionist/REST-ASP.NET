@@ -4,7 +4,6 @@ using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
-using JetBrains.Annotations;
 using Radilovsoft.Rest.Core.Exceptions;
 using Radilovsoft.Rest.Data.Core.Contract;
 using Radilovsoft.Rest.Data.Core.Contract.Entity;
@@ -28,10 +27,11 @@ namespace Radilovsoft.Rest.Infrastructure.Service
         protected IOrderHelper OrderHelper { get; }
         protected IMapper Mapper { get; }
 
-        public BaseRoService([NotNull] IRoDataProvider dataProvider,
-            [NotNull] IAsyncHelpers asyncHelpers,
-            [NotNull] IOrderHelper orderHelper,
-            [NotNull] IMapper mapper)
+        public BaseRoService(
+            IRoDataProvider dataProvider,
+            IAsyncHelpers asyncHelpers,
+            IOrderHelper orderHelper,
+            IMapper mapper)
         {
             RoDataProvider = dataProvider ?? throw new ArgumentNullException(nameof(dataProvider));
             OrderHelper = orderHelper ?? throw new ArgumentNullException(nameof(orderHelper));
@@ -50,7 +50,7 @@ namespace Radilovsoft.Rest.Infrastructure.Service
         }
 
         public virtual async Task<PagedResult<TDto>> GetByFilterAsync(
-            [NotNull] IPageFilter pageFilter,
+            IPageFilter pageFilter,
             Expression<Func<TDto, bool>> filter = null,
             IOrder[] orders = null,
             CancellationToken token = default)

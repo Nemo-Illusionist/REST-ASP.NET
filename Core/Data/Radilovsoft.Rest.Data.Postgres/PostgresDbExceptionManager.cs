@@ -1,5 +1,4 @@
 using System;
-using JetBrains.Annotations;
 using Npgsql;
 using Radilovsoft.Rest.Data.Core.Contract;
 using Radilovsoft.Rest.Data.Core.Exceptions;
@@ -8,10 +7,10 @@ namespace Radilovsoft.Rest.Data.Postgres
 {
     public class PostgresDbExceptionManager : IDataExceptionManager
     {
-        public Exception Normalize([NotNull] Exception exception)
+        public Exception Normalize(Exception exception)
         {
             if (exception == null) throw new ArgumentNullException(nameof(exception));
-            
+
             if (exception.InnerException is PostgresException ex)
             {
                 var message = ex.Message + ex.Detail;
@@ -37,5 +36,4 @@ namespace Radilovsoft.Rest.Data.Postgres
             return ex is ConcurrentModifyException;
         }
     }
-
 }

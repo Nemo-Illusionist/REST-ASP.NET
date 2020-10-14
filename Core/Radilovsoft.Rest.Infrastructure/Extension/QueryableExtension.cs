@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using AutoMapper;
-using JetBrains.Annotations;
 using Radilovsoft.Rest.Infrastructure.Contract.Dto;
 
 namespace Radilovsoft.Rest.Infrastructure.Extension
@@ -25,7 +24,7 @@ namespace Radilovsoft.Rest.Infrastructure.Extension
             return source.Skip((page - 1) * pageSize).Take(pageSize);
         }
 
-        public static IQueryable<T> ProjectTo<T>([NotNull] this IQueryable source, [NotNull] IMapper mapper)
+        public static IQueryable<T> ProjectTo<T>(this IQueryable source, IMapper mapper)
         {
             if (source == null) throw new ArgumentNullException(nameof(source));
             if (mapper == null) throw new ArgumentNullException(nameof(mapper));

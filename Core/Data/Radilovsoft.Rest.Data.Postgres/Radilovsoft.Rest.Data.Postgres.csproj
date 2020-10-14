@@ -7,6 +7,10 @@
         <SignAssembly>true</SignAssembly>
         <AssemblyOriginatorKeyFile>REST ASP.NET.pfx</AssemblyOriginatorKeyFile>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <PackageVersion>1.0.5</PackageVersion>
+        <PackageProjectUrl>https://github.com/Nemo-Illusionist/REST-ASP.NET/</PackageProjectUrl>
+        <PackageLicenseUrl>https://github.com/Nemo-Illusionist/REST-ASP.NET/blob/master/LICENSE</PackageLicenseUrl>
+        <RepositoryUrl>https://github.com/Nemo-Illusionist/REST-ASP.NET/tree/master/Core/Data/Radilovsoft.Rest.Data.Postgres</RepositoryUrl>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -14,8 +18,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Npgsql" Version="4.1.4" />
-      <PackageReference Include="Radilovsoft.Rest.Data.Core" Version="1.0.3" />
+      <PackageReference Include="Npgsql" Version="4.1.5" />
+      <PackageReference Include="Radilovsoft.Rest.Data.Core" Version="1.0.5" />
     </ItemGroup>
 
 </Project>

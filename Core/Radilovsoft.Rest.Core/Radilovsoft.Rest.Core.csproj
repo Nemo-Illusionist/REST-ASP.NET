@@ -7,12 +7,16 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Copyright>Radilov Peter</Copyright>
     <DocumentationFile>Radilovsoft.Rest.Core.xml</DocumentationFile>
-    <Version>1.0.3</Version>
+    <Version>1.0.4</Version>
     <LangVersion>8</LangVersion>
+    <PackageId>Radilovsoft.Rest.Core</PackageId>
+    <PackageProjectUrl>https://github.com/Nemo-Illusionist/REST-ASP.NET/</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/Nemo-Illusionist/REST-ASP.NET/blob/master/LICENSE</PackageLicenseUrl>
+    <RepositoryUrl>https://github.com/Nemo-Illusionist/REST-ASP.NET/tree/master/Core/Radilovsoft.Rest.Core</RepositoryUrl>
+    <PackageVersion>1.0.5</PackageVersion>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="JetBrains.Annotations" Version="2020.1.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.0" Condition="'$(Configuration)'=='Debug'" />
   </ItemGroup>
 

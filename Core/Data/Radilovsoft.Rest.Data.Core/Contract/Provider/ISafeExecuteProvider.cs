@@ -8,17 +8,17 @@ namespace Radilovsoft.Rest.Data.Core.Contract.Provider
     public interface ISafeExecuteProvider
     {
         Task<T> SafeExecuteAsync<T>(
+            IDataProvider provider,
             Func<IDataProvider, CancellationToken, Task<T>> func,
-            IDataProvider provider,
             IsolationLevel level = IsolationLevel.RepeatableRead,
             int retryCount = 3,
-            CancellationToken token = default);
+            CancellationToken cancellationToken = default);
 
-        Task SafeExecuteAsync(
+        Task SafeExecuteAsync
+        (IDataProvider provider,
             Func<IDataProvider, CancellationToken, Task> func,
-            IDataProvider provider,
             IsolationLevel level = IsolationLevel.RepeatableRead,
             int retryCount = 3,
-            CancellationToken token = default);
+            CancellationToken cancellationToken = default);
     }
 }

@@ -1,12 +1,11 @@
 using System;
-using JetBrains.Annotations;
 using Radilovsoft.Rest.Infrastructure.Dto;
 
 namespace Radilovsoft.Rest.Infrastructure.Extension
 {
     public static class FilterExtension
     {
-        public static bool IsGroup([NotNull] this Filter filter)
+        public static bool IsGroup(this Filter filter)
         {
             if (filter == null) throw new ArgumentNullException(nameof(filter));
 
@@ -14,7 +13,7 @@ namespace Radilovsoft.Rest.Infrastructure.Extension
                    || filter.OperatorEquals(GroupOperatorType.Or.ToString());
         }
 
-        public static bool OperatorEquals([NotNull] this Filter filter, string value)
+        public static bool OperatorEquals(this Filter filter, string value)
         {
             if (filter == null) throw new ArgumentNullException(nameof(filter));
 

@@ -9,11 +9,14 @@
     <Copyright>Radilov Peter</Copyright>
     <DocumentationFile>Radilovsoft.Rest.Data.Core.xml</DocumentationFile>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <Version>1.0.3</Version>
+    <Version>1.0.4</Version>
+    <PackageProjectUrl>https://github.com/Nemo-Illusionist/REST-ASP.NET/</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/Nemo-Illusionist/REST-ASP.NET/blob/master/LICENSE</PackageLicenseUrl>
+    <RepositoryUrl>https://github.com/Nemo-Illusionist/REST-ASP.NET/tree/master/Core/Data/Radilovsoft.Rest.Data.Core</RepositoryUrl>
+    <PackageVersion>1.0.5</PackageVersion>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="JetBrains.Annotations" Version="2020.1.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.0" Condition="'$(Configuration)'=='Debug'" />
   </ItemGroup>
 

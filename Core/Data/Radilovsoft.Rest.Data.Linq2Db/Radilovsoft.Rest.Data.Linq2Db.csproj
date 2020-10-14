@@ -9,11 +9,15 @@
     <Copyright>Radilov Peter</Copyright>
     <DocumentationFile>Radilovsoft.Rest.Data.Linq2Db.xml</DocumentationFile>
     <Version>1.0.3</Version>
+    <PackageVersion>1.0.5</PackageVersion>
+    <PackageProjectUrl>https://github.com/Nemo-Illusionist/REST-ASP.NET/</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/Nemo-Illusionist/REST-ASP.NET/blob/master/LICENSE</PackageLicenseUrl>
+    <RepositoryUrl>https://github.com/Nemo-Illusionist/REST-ASP.NET/tree/master/Core/Data/Radilovsoft.Rest.Data.Linq2Db</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="linq2db" Version="3.0.1" />
-    <PackageReference Include="Radilovsoft.Rest.Data.Core" Version="1.0.3" />
+    <PackageReference Include="linq2db" Version="3.1.4" />
+    <PackageReference Include="Radilovsoft.Rest.Data.Core" Version="1.0.5" />
   </ItemGroup>
 
 </Project>

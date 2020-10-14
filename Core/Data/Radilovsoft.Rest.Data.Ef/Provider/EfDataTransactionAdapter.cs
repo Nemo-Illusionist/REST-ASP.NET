@@ -1,7 +1,6 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore.Storage;
 using Radilovsoft.Rest.Data.Core.Contract.Provider;
 
@@ -11,7 +10,7 @@ namespace Radilovsoft.Rest.Data.Ef.Provider
     {
         private readonly IDbContextTransaction _transaction;
 
-        public EfDataTransactionAdapter([NotNull] IDbContextTransaction transaction)
+        public EfDataTransactionAdapter(IDbContextTransaction transaction)
         {
             _transaction = transaction ?? throw new ArgumentNullException(nameof(transaction));
         }

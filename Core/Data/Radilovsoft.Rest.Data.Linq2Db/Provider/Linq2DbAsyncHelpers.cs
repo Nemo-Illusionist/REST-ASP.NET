@@ -10,56 +10,56 @@ namespace Radilovsoft.Rest.Data.Linq2Db.Provider
 {
     public class Linq2DbAsyncHelpers : IAsyncHelpers
     {
-        public Task<T> SingleOrDefaultAsync<T>(IQueryable<T> queryable, CancellationToken token = default)
+        public Task<T> SingleOrDefaultAsync<T>(IQueryable<T> queryable, CancellationToken cancellationToken = default)
         {
-            return queryable.SingleOrDefaultAsync(token);
+            return queryable.SingleOrDefaultAsync(cancellationToken);
         }
 
-        public Task<T> SingleAsync<T>(IQueryable<T> queryable, CancellationToken token = default)
+        public Task<T> SingleAsync<T>(IQueryable<T> queryable, CancellationToken cancellationToken = default)
         {
-            return queryable.SingleAsync(token);
+            return queryable.SingleAsync(cancellationToken);
         }
 
-        public Task<T> FirstOrDefaultAsync<T>(IQueryable<T> queryable, CancellationToken token = default)
+        public Task<T> FirstOrDefaultAsync<T>(IQueryable<T> queryable, CancellationToken cancellationToken = default)
         {
-            return queryable.FirstOrDefaultAsync(token);
+            return queryable.FirstOrDefaultAsync(cancellationToken);
         }
 
-        public Task<T> FirstAsync<T>(IQueryable<T> queryable, CancellationToken token = default)
+        public Task<T> FirstAsync<T>(IQueryable<T> queryable, CancellationToken cancellationToken = default)
         {
-            return queryable.FirstAsync(token);
+            return queryable.FirstAsync(cancellationToken);
         }
 
-        public Task<T[]> ToArrayAsync<T>(IQueryable<T> queryable, CancellationToken token = default)
+        public Task<T[]> ToArrayAsync<T>(IQueryable<T> queryable, CancellationToken cancellationToken = default)
         {
-            return queryable.ToArrayAsync(token);
+            return queryable.ToArrayAsync(cancellationToken);
         }
 
-        public Task<List<T>> ToListAsync<T>(IQueryable<T> queryable, CancellationToken token = default)
+        public Task<List<T>> ToListAsync<T>(IQueryable<T> queryable, CancellationToken cancellationToken = default)
         {
-            return queryable.ToListAsync(token);
+            return queryable.ToListAsync(cancellationToken);
         }
 
-        public Task<Dictionary<TKey, T>> ToDictionaryAsync<T, TKey>(IQueryable<T> queryable, Func<T, TKey> keySelector, CancellationToken token = default)
+        public Task<Dictionary<TKey, T>> ToDictionaryAsync<T, TKey>(IQueryable<T> queryable, Func<T, TKey> keySelector, CancellationToken cancellationToken = default)
         {
-            return queryable.ToDictionaryAsync(keySelector, token);
+            return queryable.ToDictionaryAsync(keySelector, cancellationToken);
         }
 
         public Task<Dictionary<TKey, TElement>> ToDictionaryAsync<T, TKey, TElement>(IQueryable<T> queryable, Func<T, TKey> keySelector, Func<T, TElement> elementSelector,
-            CancellationToken token = default)
+            CancellationToken cancellationToken = default)
         {
-            return queryable.ToDictionaryAsync(keySelector, elementSelector, token);
+            return queryable.ToDictionaryAsync(keySelector, elementSelector, cancellationToken);
         }
 
-        public Task<int> CountAsync<T>(IQueryable<T> queryable, CancellationToken token = default)
+        public Task<int> CountAsync<T>(IQueryable<T> queryable, CancellationToken cancellationToken = default)
         {
-            return queryable.CountAsync(token);
+            return queryable.CountAsync(cancellationToken);
         }
 
         public Task<long> LongCountAsync<T>(IQueryable<T> queryable,
-            CancellationToken token = default)
+            CancellationToken cancellationToken = default)
         {
-            return queryable.LongCountAsync(token);
+            return queryable.LongCountAsync(cancellationToken);
         }
     }
 }

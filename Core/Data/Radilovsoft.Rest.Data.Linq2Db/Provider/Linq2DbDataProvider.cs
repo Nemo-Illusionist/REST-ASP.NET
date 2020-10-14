@@ -18,12 +18,11 @@ namespace Radilovsoft.Rest.Data.Linq2Db.Provider
     {
         private readonly DataConnection _dataConnection;
 
-        [NotNull]
         private readonly IDataExceptionManager _exceptionManager;
 
         public Linq2DbDataProvider(
-            [NotNull] DataConnection dataConnection,
-            [NotNull] IDataExceptionManager exceptionManager)
+            DataConnection dataConnection,
+            IDataExceptionManager exceptionManager)
         {
             _dataConnection = dataConnection ?? throw new ArgumentNullException(nameof(dataConnection));
             _exceptionManager = exceptionManager ?? throw new ArgumentNullException(nameof(exceptionManager));
@@ -47,17 +46,17 @@ namespace Radilovsoft.Rest.Data.Linq2Db.Provider
 
         #region Modify
 
-        public Task<T> InsertAsync<T>(T entity, CancellationToken token = default) where T : class
+        public Task<T> InsertAsync<T>(T entity, CancellationToken cancellationToken = default) where T : class
         {
             return ExecuteCommand(async state =>
             {
                 SetSystemProps(state.entity);
                 await _dataConnection.InsertAsync(state.entity, token: state.token).ConfigureAwait(false);
                 return state.entity;
-            }, (entity, token));
+            }, (entity, token: cancellationToken));
         }
 
-        public Task<T> UpdateAsync<T>(T entity, CancellationToken token = default)
+        public Task<T> UpdateAsync<T>(T entity, CancellationToken cancellationToken = default)
             where T : class
         {
             return ExecuteCommand(async state =>
@@ -65,26 +64,26 @@ namespace Radilovsoft.Rest.Data.Linq2Db.Provider
                 SetUpdatedUtc(state.entity);
                 await _dataConnection.UpdateAsync(state.entity, token: state.token).ConfigureAwait(false);
                 return state.entity;
-            }, (entity, token));
+            }, (entity, token: cancellationToken));
         }
 
-        public Task DeleteAsync<T>(T entity, CancellationToken token = default) where T : class
+        public Task DeleteAsync<T>(T entity, CancellationToken cancellationToken = default) where T : class
         {
             return ExecuteCommand(state => _dataConnection.DeleteAsync(state.entity, token: state.token),
-                (entity, token));
+                (entity, token: cancellationToken));
         }
 
-        public Task DeleteByIdAsync<T, TKey>(TKey id, CancellationToken token = default)
+        public Task DeleteByIdAsync<T, TKey>(TKey id, CancellationToken cancellationToken = default)
             where T : class, IEntity<TKey> where TKey : IComparable
         {
             return ExecuteCommand(
                 state =>
                 {
                     return _dataConnection.GetTable<T>().Where(x => x.Id.Equals(state.id)).DeleteAsync(state.token);
-                }, (id, token));
+                }, (id, token: cancellationToken));
         }
 
-        public Task SetDeleteAsync<T, TKey>(TKey id, CancellationToken token = default)
+        public Task SetDeleteAsync<T, TKey>(TKey id, CancellationToken cancellationToken = default)
             where T : class, IDeletable, IEntity<TKey>
             where TKey : IComparable
         {
@@ -97,10 +96,10 @@ namespace Radilovsoft.Rest.Data.Linq2Db.Provider
                 queryable = SetUpdateUtc(queryable);
 
                 return queryable.UpdateAsync(state.token);
-            }, (id, token));
+            }, (id, token: cancellationToken));
         }
 
-        public Task SetUnDeleteAsync<T, TKey>(TKey id, CancellationToken token = default)
+        public Task SetUnDeleteAsync<T, TKey>(TKey id, CancellationToken cancellationToken = default)
             where T : class, IDeletable, IEntity<TKey>
             where TKey : IComparable
         {
@@ -113,25 +112,25 @@ namespace Radilovsoft.Rest.Data.Linq2Db.Provider
                 queryable = SetUpdateUtc(queryable);
 
                 return queryable.UpdateAsync(state.token);
-            }, (id, token));
+            }, (id, token: cancellationToken));
         }
 
         #endregion
 
         #region BatchModify
 
-        public Task BatchInsertAsync<T>(IEnumerable<T> entities, CancellationToken token = default)
+        public Task BatchInsertAsync<T>(IEnumerable<T> entities, CancellationToken cancellationToken = default)
             where T : class
         {
             return ExecuteCommand(states =>
             {
                 states.entities = states.entities.Select(SetSystemProps);
-                return Task.Factory.StartNew(() => _dataConnection.BulkCopy(states.entities), token,
+                return Task.Factory.StartNew(() => _dataConnection.BulkCopy(states.entities), cancellationToken,
                     TaskCreationOptions.LongRunning, TaskScheduler.Default);
-            }, (entities, token));
+            }, (entities, token: cancellationToken));
         }
 
-        public Task BatchUpdateAsync<T>(IEnumerable<T> entities, CancellationToken token = default)
+        public Task BatchUpdateAsync<T>(IEnumerable<T> entities, CancellationToken cancellationToken = default)
             where T : class
         {
             return ExecuteCommand(async states =>
@@ -144,10 +143,10 @@ namespace Radilovsoft.Rest.Data.Linq2Db.Provider
                 }
 
                 return new object();
-            }, (entities, token));
+            }, (entities, token: cancellationToken));
         }
 
-        public Task BatchDeleteAsync<T>(IEnumerable<T> entities, CancellationToken token = default)
+        public Task BatchDeleteAsync<T>(IEnumerable<T> entities, CancellationToken cancellationToken = default)
             where T : class
         {
             return ExecuteCommand(
@@ -156,10 +155,10 @@ namespace Radilovsoft.Rest.Data.Linq2Db.Provider
                     return _dataConnection.GetTable<T>().Where(x => state.entities.Any(x.Equals))
                         .DeleteAsync(state.token);
                 },
-                (entities, token));
+                (entities, token: cancellationToken));
         }
 
-        public Task BatchDeleteByIdsAsync<T, TKey>(IEnumerable<TKey> ids, CancellationToken token = default)
+        public Task BatchDeleteByIdsAsync<T, TKey>(IEnumerable<TKey> ids, CancellationToken cancellationToken = default)
             where T : class, IEntity<TKey>
             where TKey : IComparable
         {
@@ -167,10 +166,10 @@ namespace Radilovsoft.Rest.Data.Linq2Db.Provider
                 state =>
                 {
                     return _dataConnection.GetTable<T>().Where(x => state.ids.Contains(x.Id)).DeleteAsync(state.token);
-                }, (ids, token));
+                }, (ids, token: cancellationToken));
         }
 
-        public Task BatchSetDeleteAsync<T, TKey>(IEnumerable<TKey> ids, CancellationToken token = default)
+        public Task BatchSetDeleteAsync<T, TKey>(IEnumerable<TKey> ids, CancellationToken cancellationToken = default)
             where T : class, IDeletable, IEntity<TKey> where TKey : IComparable
         {
             return ExecuteCommand(state =>
@@ -182,10 +181,10 @@ namespace Radilovsoft.Rest.Data.Linq2Db.Provider
                 queryable = SetUpdateUtc(queryable);
 
                 return queryable.UpdateAsync(state.token);
-            }, (ids, token));
+            }, (ids, token: cancellationToken));
         }
 
-        public Task BatchSetUnDeleteAsync<T, TKey>(IEnumerable<TKey> ids, CancellationToken token = default)
+        public Task BatchSetUnDeleteAsync<T, TKey>(IEnumerable<TKey> ids, CancellationToken cancellationToken = default)
             where T : class, IDeletable, IEntity<TKey> where TKey : IComparable
         {
             return ExecuteCommand(state =>
@@ -197,7 +196,7 @@ namespace Radilovsoft.Rest.Data.Linq2Db.Provider
                 queryable = SetUpdateUtc(queryable);
 
                 return queryable.UpdateAsync(state.token);
-            }, (ids, token));
+            }, (ids, token: cancellationToken));
         }
 
         #endregion

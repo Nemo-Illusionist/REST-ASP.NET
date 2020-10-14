@@ -14,34 +14,33 @@ namespace Radilovsoft.Rest.Data.Core.Provider
 
         protected SafeExecuteProvider(IDataExceptionManager dataExceptionManager)
         {
-            ExceptionManager = dataExceptionManager
-                               ?? throw new ArgumentNullException(nameof(dataExceptionManager));
+            ExceptionManager = dataExceptionManager ?? throw new ArgumentNullException(nameof(dataExceptionManager));
         }
 
         public Task<T> SafeExecuteAsync<T>(
-            Func<IDataProvider, CancellationToken, Task<T>> func,
             IDataProvider provider,
+            Func<IDataProvider, CancellationToken, Task<T>> func,
             IsolationLevel level = IsolationLevel.RepeatableRead,
             int retryCount = 3,
-            CancellationToken token = default)
+            CancellationToken cancellationToken = default)
         {
-            return SafeExecuteAsync(WrapperTaskT, func, provider, level, retryCount, token);
+            return SafeExecuteAsync(provider, WrapperTaskT, func, level, retryCount, cancellationToken);
         }
 
         public Task SafeExecuteAsync(
-            Func<IDataProvider, CancellationToken, Task> func,
             IDataProvider provider,
+            Func<IDataProvider, CancellationToken, Task> func,
             IsolationLevel level = IsolationLevel.RepeatableRead,
             int retryCount = 3,
-            CancellationToken token = default)
+            CancellationToken cancellationToken = default)
         {
-            return SafeExecuteAsync(WrapperTask<VoidStruct>, func, provider, level, retryCount, token);
+            return SafeExecuteAsync(provider, WrapperTask<VoidStruct>, func, level, retryCount, cancellationToken);
         }
 
         private async Task<T> SafeExecuteAsync<T, TArg>(
+            IDataProvider provider,
             Func<IDataProvider, TArg, CancellationToken, Task<T>> func,
             TArg arg,
-            IDataProvider provider,
             IsolationLevel level = IsolationLevel.RepeatableRead,
             int retryCount = 3,
             CancellationToken token = default)
@@ -57,13 +56,13 @@ namespace Radilovsoft.Rest.Data.Core.Provider
                     await transaction.CommitAsync(token).ConfigureAwait(false);
                     break;
                 }
-                catch (Exception exception)
+                catch (Exception exception) when (ExceptionManager.IsRepeatAction(exception) && ++count < retryCount)
+                {
+                    await Task.Delay(TimeSpan.FromSeconds(1), token).ConfigureAwait(false);
+                }
+                finally
                 {
                     Reset();
-
-                    if (ExceptionManager.IsRepeatAction(exception) && ++count >= retryCount) throw;
-
-                    await Task.Delay(TimeSpan.FromSeconds(1), token).ConfigureAwait(false);
                 }
             }
 

@@ -11,7 +11,7 @@ namespace Radilovsoft.Rest.Data.Linq2Db.Provider
     {
         private readonly DataConnectionTransaction _transaction;
 
-        public Linq2DbDataTransactionAdapter([NotNull] DataConnectionTransaction transaction)
+        public Linq2DbDataTransactionAdapter(DataConnectionTransaction transaction)
         {
             _transaction = transaction ?? throw new ArgumentNullException(nameof(transaction));
         }

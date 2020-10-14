@@ -4,7 +4,6 @@ using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using JetBrains.Annotations;
 using Radilovsoft.Rest.Infrastructure.Contract.Helper;
 using Radilovsoft.Rest.Infrastructure.Dto;
 using Radilovsoft.Rest.Infrastructure.Extension;
@@ -14,16 +13,16 @@ namespace Radilovsoft.Rest.Infrastructure.Helpers
     public class FilterHelper : IFilterHelper
     {
         private static readonly MethodInfo InMethod;
-        
+
         static FilterHelper()
         {
             InMethod = typeof(Enumerable).GetMethods()
                 .Single(x => x.Name == nameof(Enumerable.Contains) && x.GetParameters().Length == 2);
         }
-        
+
         private readonly IExpressionHelper _expressionHelper;
 
-        public FilterHelper([NotNull] IExpressionHelper expressionHelper)
+        public FilterHelper(IExpressionHelper expressionHelper)
         {
             _expressionHelper = expressionHelper ?? throw new ArgumentNullException(nameof(expressionHelper));
         }
@@ -91,7 +90,8 @@ namespace Radilovsoft.Rest.Infrastructure.Helpers
                 case OperatorType.GreaterOrEqual:
                     return Expression.GreaterThanOrEqual(prop, constant);
                 case OperatorType.In:
-                    return Expression.Call(null, InMethod.MakeGenericMethod(prop.Type), constant, prop);;
+                    return Expression.Call(null, InMethod.MakeGenericMethod(prop.Type), constant, prop);
+                    ;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(filter));
             }
@@ -159,7 +159,7 @@ namespace Radilovsoft.Rest.Infrastructure.Helpers
         }
 
         protected virtual Expression GetRestrictionExpression(
-            string operatorValue, 
+            string operatorValue,
             Expression propertyExpression,
             ConstantExpression constantExpression)
         {

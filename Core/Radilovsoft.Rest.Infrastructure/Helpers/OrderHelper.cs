@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using JetBrains.Annotations;
 using Radilovsoft.Rest.Infrastructure.Contract.Dto;
 using Radilovsoft.Rest.Infrastructure.Contract.Helper;
 using Radilovsoft.Rest.Infrastructure.Dto;
@@ -37,13 +36,13 @@ namespace Radilovsoft.Rest.Infrastructure.Helpers
         }
 
 
-        public OrderHelper([NotNull] IExpressionHelper expressionHelper)
+        public OrderHelper(IExpressionHelper expressionHelper)
         {
             _expressionHelper =
                 expressionHelper ?? throw new ArgumentNullException(nameof(expressionHelper));
         }
 
-        public IOrderedQueryable<T> ApplyOrderBy<T>([NotNull] IQueryable<T> queryable, [NotNull] IOrder order)
+        public IOrderedQueryable<T> ApplyOrderBy<T>(IQueryable<T> queryable, IOrder order)
         {
             if (queryable == null) throw new ArgumentNullException(nameof(queryable));
             if (order == null) throw new ArgumentNullException(nameof(order));
@@ -52,7 +51,7 @@ namespace Radilovsoft.Rest.Infrastructure.Helpers
             return ApplyFirstOrder(queryable, type, order);
         }
 
-        public IOrderedQueryable<T> ApplyOrderBy<T>([NotNull] IQueryable<T> queryable, [NotNull] IOrder[] orders)
+        public IOrderedQueryable<T> ApplyOrderBy<T>(IQueryable<T> queryable, IOrder[] orders)
         {
             if (queryable == null) throw new ArgumentNullException(nameof(queryable));
             if (orders == null || !orders.Any()) throw new ArgumentNullException(nameof(orders));

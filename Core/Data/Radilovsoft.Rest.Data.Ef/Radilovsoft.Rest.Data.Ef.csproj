@@ -9,14 +9,18 @@
     <Copyright>Radilov Peter</Copyright>
     <DocumentationFile>Radilovsoft.Rest.Data.Ef.xml</DocumentationFile>
     <Version>1.0.3</Version>
+    <PackageProjectUrl>https://github.com/Nemo-Illusionist/REST-ASP.NET/</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/Nemo-Illusionist/REST-ASP.NET/blob/master/LICENSE</PackageLicenseUrl>
+    <RepositoryUrl>https://github.com/Nemo-Illusionist/REST-ASP.NET/tree/master/Core/Data/Radilovsoft.Rest.Data.Ef</RepositoryUrl>
+    <PackageVersion>1.0.5</PackageVersion>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc.DataAnnotations" Version="2.2.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.6" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="3.1.6" />
-    <PackageReference Include="Radilovsoft.Rest.Core" Version="1.0.3" />
-    <PackageReference Include="Radilovsoft.Rest.Data.Core" Version="1.0.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.9" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="3.1.9" />
+    <PackageReference Include="Radilovsoft.Rest.Core" Version="1.0.5" />
+    <PackageReference Include="Radilovsoft.Rest.Data.Core" Version="1.0.5" />
   </ItemGroup>
 
 </Project>
